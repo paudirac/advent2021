@@ -4,6 +4,9 @@ So components can be summed separately and values can be grouped together at you
 
 But we've here to have some fun, haven't we?
 """
+import logging
+log = logging.getLogger(__name__)
+
 from collections import namedtuple
 
 forward = namedtuple('forward', ['arg'])
@@ -47,7 +50,7 @@ class Submarine:
         move = self.move
         if isinstance(cmd, cmds):
             self.position = move(self.position, cmd)
-            print(f'{cmd} {self.position}')
+            log.debug(f'{cmd} {self.position}')
         else:
             raise Exception(f'Unknown command {cmd}')
 

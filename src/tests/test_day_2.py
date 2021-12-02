@@ -2,6 +2,7 @@ from advent2021.submarine import (
     tokenize,
     Submarine,
     Position,
+    AimPosition,
     forward,
     down,
     up,
@@ -57,3 +58,18 @@ forward 2
     for cmd in commands:
         submarine.process(cmd)
     assert submarine.position.x * submarine.position.y == 150
+
+def test_with_aim():
+    sample = mk_sample("""
+forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2
+    """)
+    submarine = Submarine(AimPosition(x=0, y=0, aim=0))
+    commands = tokenize(sample)
+    for cmd in commands:
+        submarine.process(cmd)
+    assert submarine.position.x * submarine.position.y == 900

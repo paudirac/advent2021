@@ -29,6 +29,10 @@ def sliding_sum(sample, window=1):
     #     print(f'{chunk=} {sum(chunk)}')
     return [sum(chunk) for chunk in Chunks(sample, window=window)]
 
+def lines(f):
+    for line in f.readlines():
+        yield line
+
 def int_lines(f):
     for line in f.readlines():
         yield int(line)
@@ -36,22 +40,39 @@ def int_lines(f):
 def as_list(g):
     return list(g)
 
+from .submarine import (
+    tokenize,
+    Submarine,
+    Position,
+    AimPosition,
+)
+
+def day_2_1(lns):
+    submarine = Submarine(Position(x=0, y=0))
+    commands = tokenize(lns)
+    for cmd in commands:
+        submarine.process(cmd)
+    return submarine.position.x * submarine.position.y
+
+def day_2_2(lns):
+    submarine = Submarine(AimPosition(x=0, y=0, aim=0))
+    commands = tokenize(lns)
+    for cmd in commands:
+        submarine.process(cmd)
+    return submarine.position.x * submarine.position.y
+
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
+    '2.1': day_2_1,
+    '2.2': day_2_2,
 }
 
 PARSER = {
     '1.1': lambda f: as_list(int_lines(f)),
     '1.2': lambda f: as_list(int_lines(f)),
+    '2.1': lambda f: lines(f),
+    '2.2': lambda f: lines(f),
 }
 
-if __name__ == '__main__':
-    import sys
-
-    _, day = sys.argv
-    print(f'{day=}')
-    f = sys.stdin
-    parsed = list(PARSER[day](f))
-    answer = DAYS[day](parsed)
-    print(f'Day {day} answer: {answer}')

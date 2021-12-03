@@ -43,19 +43,21 @@ def as_list(g):
 from .submarine import (
     tokenize,
     Submarine,
+    new_submarine,
+    AimSubmarine,
     Position,
     AimPosition,
 )
 
 def day_2_1(lns):
-    submarine = Submarine(Position(x=0, y=0))
+    submarine = new_submarine(Position(x=0, y=0))
     commands = tokenize(lns)
     for cmd in commands:
         submarine.process(cmd)
     return submarine.position.x * submarine.position.y
 
 def day_2_2(lns):
-    submarine = Submarine(AimPosition(x=0, y=0, aim=0))
+    submarine = new_submarine(AimPosition(x=0, y=0, aim=0))
     commands = tokenize(lns)
     for cmd in commands:
         submarine.process(cmd)

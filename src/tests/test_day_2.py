@@ -1,6 +1,6 @@
 from advent2021.submarine import (
     tokenize,
-    Submarine,
+    new_submarine,
     Position,
     AimPosition,
     forward,
@@ -37,7 +37,7 @@ up 3
 down 8
 forward 2
     """)
-    submarine = Submarine(Position(x=0, y=0))
+    submarine = new_submarine(Position(x=0, y=0))
     assert submarine.position == Position(x=0, y=0)
     commands = tokenize(sample)
     for cmd in commands:
@@ -53,7 +53,7 @@ up 3
 down 8
 forward 2
     """)
-    submarine = Submarine(Position(x=0, y=0))
+    submarine = new_submarine(Position(x=0, y=0))
     commands = tokenize(sample)
     for cmd in commands:
         submarine.process(cmd)
@@ -68,7 +68,7 @@ up 3
 down 8
 forward 2
     """)
-    submarine = Submarine(AimPosition(x=0, y=0, aim=0))
+    submarine = new_submarine(AimPosition(x=0, y=0, aim=0))
     commands = tokenize(sample)
     for cmd in commands:
         submarine.process(cmd)

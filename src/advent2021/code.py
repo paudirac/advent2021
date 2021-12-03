@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger(__name__)
+
 def zip_one(lst):
     return zip(lst, lst[1:])
 
@@ -63,12 +66,18 @@ def day_2_2(lns):
         submarine.process(cmd)
     return submarine.position.x * submarine.position.y
 
+from .diagnostics import power_consumption
+
+def day_3_1(lns):
+    logging.basicConfig(level=logging.DEBUG)
+    return power_consumption(lns)
 
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
     '2.1': day_2_1,
     '2.2': day_2_2,
+    '3.1': day_3_1,
 }
 
 PARSER = {
@@ -76,5 +85,6 @@ PARSER = {
     '1.2': lambda f: as_list(int_lines(f)),
     '2.1': lambda f: lines(f),
     '2.2': lambda f: lines(f),
+    '3.1': lambda f: lines(f),
 }
 

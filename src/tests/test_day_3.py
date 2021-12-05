@@ -5,6 +5,9 @@ from advent2021.diagnostics import (
     tokenize,
     Map2D,
     power_consumption,
+    life_support_rating,
+    oxygen_generator_rating,
+    tokenize2,
 )
 
 def mk_sample(s):
@@ -203,3 +206,120 @@ def test_power_consumption():
 01010
     """)
     assert power_consumption(sample) == 198
+
+def xtest_life_support_rating():
+    sample = mk_sample("""
+00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010
+    """)
+    assert life_support_rating(sample) == 230
+
+single = (mk_sample("""
+10111
+    """), 23)
+fifth_position = (mk_sample("""
+10110
+10111
+"""), 23)
+
+@pytest.mark.parametrize(
+    "sample, expected", [
+        single,
+        fifth_position,
+    ]
+)
+def xtest_ogr_single(sample, expected):
+    tokens = tokenize2(sample)
+    assert oxygen_generator_rating(tokens) == expected
+
+def test_filters_oxigen():
+    sample = [
+        "00100",
+        "11110",
+        "10110",
+        "10111",
+        "10101",
+        "01111",
+        "00111",
+        "11100",
+        "10000",
+        "11001",
+        "00010",
+        "01010",
+    ]
+    rows = tokenize2(sample)
+    m2d = Map2D(rows)
+    def count01(column):
+        zeros = sum(1 for _ in filter(lambda x: x == '0', column))
+        ones = sum(1 for _ in filter(lambda x: x == '1', column))
+        return zeros, ones
+    def mostOr1(pair):
+        zeros, ones = pair
+        return 1 if ones >= zeros else 0
+
+    filtered = m2d.rows
+    for i in range(len(m2d.columns)):
+        curr = Map2D(filtered)
+        filter_value = curr.icolumns \
+                           .imap(count01) \
+                           .imap(mostOr1) \
+                           .to(lambda cols: cols[i])
+        def fi(row):
+            fival = row[i] == str(filter_value)
+            return fival
+        filtered = curr.irows \
+                       .filter(fi)
+        if len(filtered) == 1:
+            break
+    assert filtered[0] == list('10111')
+
+def test_filters_co2():
+    sample = [
+        "00100",
+        "11110",
+        "10110",
+        "10111",
+        "10101",
+        "01111",
+        "00111",
+        "11100",
+        "10000",
+        "11001",
+        "00010",
+        "01010",
+    ]
+    rows = tokenize2(sample)
+    m2d = Map2D(rows)
+    def count01(column):
+        zeros = sum(1 for _ in filter(lambda x: x == '0', column))
+        ones = sum(1 for _ in filter(lambda x: x == '1', column))
+        return zeros, ones
+    def leastOr0(pair):
+        zeros, ones = pair
+        return 1 if ones < zeros else 0
+
+    filtered = m2d.rows
+    for i in range(len(m2d.columns)):
+        curr = Map2D(filtered)
+        filter_value = curr.icolumns \
+                           .imap(count01) \
+                           .imap(leastOr0) \
+                           .to(lambda cols: cols[i])
+        def fi(row):
+            fival = row[i] == str(filter_value)
+            return fival
+        filtered = curr.irows \
+                       .filter(fi)
+        if len(filtered) == 1:
+            break
+    assert filtered[0] == list('01010')

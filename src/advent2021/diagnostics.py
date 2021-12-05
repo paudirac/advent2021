@@ -56,6 +56,12 @@ class Iterable:
         mapped = self.map(f)
         return Iterable(mapped)
 
+    def filter(self, f):
+        return [item for item in self if f(item)]
+
+    def ifilter(self, f):
+        return Iterable(self.filter(f))
+
     def reduce(self, f, initial):
         acc = initial
         for item in self:
@@ -68,7 +74,7 @@ class Iterable:
         return self
 
     def to(self, f):
-        return f(self)
+        return f(list(self))
 
 class Map2D:
 
@@ -94,9 +100,13 @@ class Map2D:
     def icolumns(self):
         return Iterable(self.columns)
 
+def tokenize2(s):
+    return [tuple(token) for token in tokenize(s)]
+
+def to_int(arr):
+    return int(''.join(arr), base=2)
+
 def power_consumption(tokens):
-    def tokenize2(s):
-        return [tuple(token) for token in tokenize(s)]
     tokens = tokenize2(tokens)
     dump = Map2D(tokens)
     def count01(column):
@@ -110,8 +120,6 @@ def power_consumption(tokens):
         z, o = tup
         return 0 if z < o else 1
     def identity(x): return x
-    def to_int(arr):
-        return int(''.join(arr), base=2)
     def second(a,b):
         return b
     counts = dump.icolumns \
@@ -125,3 +133,35 @@ def power_consumption(tokens):
                .imap(str) \
                .to(to_int)
     return gamma_rate * epsilon_rate
+
+
+def oxygen_generator_rating(tokens):
+    dump = Map2D(tokens)
+    def count01(column):
+        zeros = sum(1 for _ in filter(lambda x: x == '0', column))
+        ones = sum(1 for _ in filter(lambda x: x == '1', column))
+        return zeros, ones
+    counts = dump.icolumns.imap(count01).to(list)
+    def kk(row):
+        return counts[1], row
+    def identity(x): return x
+    res = dump.irows \
+        .imap(kk) \
+        .map(identity)
+
+    log.debug(f'{res=}')
+    result = tokens
+    log.debug(f'{result=}')
+    if not len(result) == 1:
+        raise Exception('To much data')
+    else:
+        return to_int(result[0])
+
+def co2_scrubber_rating(tokens):
+    pass
+
+def life_support_rating(lines):
+    tokens = tokenize2(lines)
+    ogr = oxygen_generator_rating(tokens)
+    co2sr = co2_scrubber_rating(tokens)
+    return ogr * co2sr

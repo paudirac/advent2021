@@ -66,11 +66,12 @@ def day_2_2(lns):
         submarine.process(cmd)
     return submarine.position.x * submarine.position.y
 
-from .diagnostics import power_consumption
+#from .diagnostics import power_consumption
 
 def day_3_1(lns):
-    logging.basicConfig(level=logging.DEBUG)
-    return power_consumption(lns)
+    pass
+    # logging.basicConfig(level=logging.DEBUG)
+    # return power_consumption(lns)
 
 DAYS = {
     '1.1': count_larger,

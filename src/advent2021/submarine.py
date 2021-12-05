@@ -25,7 +25,6 @@ class Submarine:
     def process(self, cmd):
         if isinstance(cmd, cmds):
             self.position = self._next_move(self.position, cmd)
-            log.debug(f'{cmd} {self.position}')
         else:
             raise Exception(f'Unknown command {cmd}')
 

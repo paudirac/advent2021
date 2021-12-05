@@ -7,6 +7,7 @@ from advent2021.diagnostics import (
     power_consumption,
     life_support_rating,
     oxygen_generator_rating,
+    co2_scrubber_rating,
     tokenize2,
 )
 
@@ -231,16 +232,48 @@ fifth_position = (mk_sample("""
 10110
 10111
 """), 23)
+all_positions = (mk_sample("""
+00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010
+    """), 23)
+
 
 @pytest.mark.parametrize(
-    "sample, expected", [
+    "lines, expected", [
         single,
         fifth_position,
+        all_positions,
     ]
 )
-def xtest_ogr_single(sample, expected):
-    tokens = tokenize2(sample)
-    assert oxygen_generator_rating(tokens) == expected
+def test_ogr_single(lines, expected):
+    assert oxygen_generator_rating(lines) == expected
+
+def test_co2():
+    lines = mk_sample("""
+00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010
+    """)
+    assert co2_scrubber_rating(lines) == 10
 
 def test_filters_oxigen():
     sample = [

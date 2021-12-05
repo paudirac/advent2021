@@ -66,11 +66,14 @@ def day_2_2(lns):
         submarine.process(cmd)
     return submarine.position.x * submarine.position.y
 
-from .diagnostics import power_consumption
+from .diagnostics import power_consumption, life_support_rating
 
 def day_3_1(lns):
     logging.basicConfig(level=logging.DEBUG)
     return power_consumption(lns)
+
+def day_3_2(lns):
+    return life_support_rating(lns)
 
 DAYS = {
     '1.1': count_larger,
@@ -78,6 +81,7 @@ DAYS = {
     '2.1': day_2_1,
     '2.2': day_2_2,
     '3.1': day_3_1,
+    '3.2': day_3_2,
 }
 
 PARSER = {
@@ -86,5 +90,6 @@ PARSER = {
     '2.1': lambda f: lines(f),
     '2.2': lambda f: lines(f),
     '3.1': lambda f: lines(f),
+    '3.2': lambda f: lines(f),
 }
 

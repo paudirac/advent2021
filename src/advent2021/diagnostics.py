@@ -134,7 +134,6 @@ def power_consumption(tokens):
                .to(to_int)
     return gamma_rate * epsilon_rate
 
-
 def oxygen_generator_rating(lines):
     rows = tokenize2(lines)
     m2d = Map2D(rows)

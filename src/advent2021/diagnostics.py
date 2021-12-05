@@ -134,61 +134,42 @@ def power_consumption(tokens):
                .to(to_int)
     return gamma_rate * epsilon_rate
 
-def oxygen_generator_rating(lines):
+def filter_by_bit_criteria(lines, criteria):
     rows = tokenize2(lines)
     m2d = Map2D(rows)
     def count01(column):
         zeros = sum(1 for _ in filter(lambda x: x == '0', column))
         ones = sum(1 for _ in filter(lambda x: x == '1', column))
         return zeros, ones
+
+    filtered = m2d.rows
+    for i in range(len(m2d.columns)):
+        curr = Map2D(filtered)
+        filter_value = curr.icolumns \
+                           .imap(count01) \
+                           .imap(criteria) \
+                           .to(lambda cols: cols[i])
+        def fi(row):
+            fival = row[i] == str(filter_value)
+            return fival
+        filtered = curr.irows \
+                       .filter(fi)
+        if len(filtered) == 1:
+            break
+    assert len(filtered) == 1, "Too much data"
+    return to_int(filtered[0])
+
+def oxygen_generator_rating(lines):
     def mostOr1(pair):
         zeros, ones = pair
         return 1 if ones >= zeros else 0
-
-    filtered = m2d.rows
-    for i in range(len(m2d.columns)):
-        curr = Map2D(filtered)
-        filter_value = curr.icolumns \
-                           .imap(count01) \
-                           .imap(mostOr1) \
-                           .to(lambda cols: cols[i])
-        def fi(row):
-            fival = row[i] == str(filter_value)
-            return fival
-        filtered = curr.irows \
-                       .filter(fi)
-        if len(filtered) == 1:
-            break
-    assert len(filtered) == 1, "Too much data"
-    return to_int(filtered[0])
+    return filter_by_bit_criteria(lines, criteria=mostOr1)
 
 def co2_scrubber_rating(lines):
-    rows = tokenize2(lines)
-    m2d = Map2D(rows)
-    def count01(column):
-        zeros = sum(1 for _ in filter(lambda x: x == '0', column))
-        ones = sum(1 for _ in filter(lambda x: x == '1', column))
-        return zeros, ones
     def leastOr0(pair):
         zeros, ones = pair
         return 1 if ones < zeros else 0
-
-    filtered = m2d.rows
-    for i in range(len(m2d.columns)):
-        curr = Map2D(filtered)
-        filter_value = curr.icolumns \
-                           .imap(count01) \
-                           .imap(leastOr0) \
-                           .to(lambda cols: cols[i])
-        def fi(row):
-            fival = row[i] == str(filter_value)
-            return fival
-        filtered = curr.irows \
-                       .filter(fi)
-        if len(filtered) == 1:
-            break
-    assert len(filtered) == 1, "Too much data"
-    return to_int(filtered[0])
+    return filter_by_bit_criteria(lines, criteria=leastOr0)
 
 def life_support_rating(lines):
     ogr = oxygen_generator_rating(lines)

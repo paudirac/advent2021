@@ -94,3 +94,34 @@ class Map2D:
     def icolumns(self):
         return Iterable(self.columns)
 
+def power_consumption(tokens):
+    def tokenize2(s):
+        return [tuple(token) for token in tokenize(s)]
+    tokens = tokenize2(tokens)
+    dump = Map2D(tokens)
+    def count01(column):
+        zeros = sum(1 for _ in filter(lambda x: x == '0', column))
+        ones = sum(1 for _ in filter(lambda x: x == '1', column))
+        return zeros, ones
+    def most(tup):
+        z, o = tup
+        return 0 if z > o else 1
+    def least(tup):
+        z, o = tup
+        return 0 if z < o else 1
+    def identity(x): return x
+    def to_int(arr):
+        return int(''.join(arr), base=2)
+    def second(a,b):
+        return b
+    counts = dump.icolumns \
+                 .imap(count01)
+    gamma_rate = counts \
+               .imap(most) \
+               .imap(str) \
+               .to(to_int)
+    epsilon_rate = counts \
+               .imap(least) \
+               .imap(str) \
+               .to(to_int)
+    return gamma_rate * epsilon_rate

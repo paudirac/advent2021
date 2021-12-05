@@ -4,6 +4,7 @@ log = logging.getLogger(__name__)
 from advent2021.diagnostics import (
     tokenize,
     Map2D,
+    power_consumption,
 )
 
 def mk_sample(s):
@@ -201,34 +202,4 @@ def test_power_consumption():
 00010
 01010
     """)
-    tokens = tokenize2(sample)
-    dump = Map2D(tokens)
-    def count01(column):
-        zeros = sum(1 for _ in filter(lambda x: x == '0', column))
-        ones = sum(1 for _ in filter(lambda x: x == '1', column))
-        return zeros, ones
-    def most(tup):
-        z, o = tup
-        return 0 if z > o else 1
-    def least(tup):
-        z, o = tup
-        return 0 if z < o else 1
-    def identity(x): return x
-    def to_int(arr):
-        return int(''.join(arr), base=2)
-    def second(a,b):
-        return b
-    counts = dump.icolumns \
-                 .imap(count01)
-    gamma_rate = counts \
-               .imap(most) \
-               .imap(str) \
-               .to(to_int)
-    epsilon_rate = counts \
-               .imap(least) \
-               .imap(str) \
-               .to(to_int)
-    power_consumption = gamma_rate * epsilon_rate
-    assert gamma_rate == 22
-    assert epsilon_rate == 9
-    assert power_consumption == 198
+    assert power_consumption(sample) == 198

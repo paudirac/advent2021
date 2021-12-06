@@ -13,11 +13,30 @@ class Game:
     def __init__(self, draws, boards):
         self.draws = draws
         self.boards = boards
+        self._drawn_index = None
+
+    def draw(self):
+        self._next()
+        for board in self.boards:
+            board.mark(self.called)
+
+    def _next(self):
+        if self._drawn_index is None:
+            self._drawn_index = 0
+        else:
+            self._drawn_index += 1
+
+    @property
+    def called(self):
+        return self.draws[self._drawn_index]
 
 class Board:
 
     def __init__(self, numbers):
         self.numbers = numbers
+
+    def mark(self, called):
+        pass
 
     def __repr__(self):
         r  = '----- Board -----\n'

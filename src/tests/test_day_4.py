@@ -4,6 +4,7 @@ log = logging.getLogger(__name__)
 
 from advent2021.bingo import (
     new_game,
+    Game,
 )
 
 def mk_lines(s):
@@ -40,3 +41,32 @@ def test_parse_bingo():
     ]
     assert len(game.boards) == 3
     log.debug(f'{game.boards=}')
+
+def test_draw():
+    lines = mk_lines(sample_data)
+    game = new_game(lines)
+    draws = [
+        7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+    ]
+    for drawn in draws:
+        game.draw()
+        assert game.called == drawn
+
+class BoardMock:
+
+    def __init__(self):
+        self.marked_called_with = []
+
+    def mark(self, number):
+        self.marked_called_with.append(number)
+
+def test_game_draw_marks_boards():
+    m1 = BoardMock()
+    m2 = BoardMock()
+    game = Game(draws=[1, 2, 3, 4], boards=[m1, m2])
+    game.draw()
+    game.draw()
+    game.draw()
+    game.draw()
+    assert m1.marked_called_with == [1, 2, 3, 4]
+    assert m2.marked_called_with == [1, 2, 3, 4]

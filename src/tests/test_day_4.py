@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 from advent2021.bingo import (
     new_game,
     Game,
+    Board,
 )
 
 def mk_lines(s):
@@ -70,3 +71,43 @@ def test_game_draw_marks_boards():
     game.draw()
     assert m1.marked_called_with == [1, 2, 3, 4]
     assert m2.marked_called_with == [1, 2, 3, 4]
+
+def test_mark_board_number_changes_score():
+    numbers = [
+        1, 2, 3, 4, 5,
+        6, 7, 8, 9, 10,
+        11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25,
+    ]
+    board = Board.from_numbers(numbers)
+    assert board.numbers == numbers
+    score = sum(n for n in range(1, 25 + 1))
+    assert board.score == score
+    for n in range(1, 25 + 1):
+        board.mark(n)
+        score -= n
+        assert board.score == score
+
+def test_complete_row_is_wins():
+    numbers = [
+        1,   2,  3,  4,  5,
+        6,   7,  8,  9, 10,
+        11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25,
+    ]
+    board = Board.from_numbers(numbers)
+    assert not board.wins
+    for n in [6, 7, 8, 9]:
+        board.mark(n)
+        assert not board.wins
+    board.mark(10)
+    assert board.wins
+    board = Board.from_numbers(numbers)
+    assert not board.wins
+    for n in [3, 8, 13, 18]:
+        board.mark(n)
+        assert not board.wins
+    board.mark(23)
+    assert board.wins

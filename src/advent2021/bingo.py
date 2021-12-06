@@ -34,22 +34,61 @@ class Board:
 
     def __init__(self, numbers):
         self.numbers = numbers
+        self.marked = set()
+        self._marked = [False for _ in numbers]
 
-    def mark(self, called):
-        pass
+    def mark(self, n):
+        try:
+            i = self.numbers.index(n)
+            self._marked[i] = True
+            self.marked.add(n)
+        except: # Not in the list
+            pass
+
+    @property
+    def score(self):
+        return sum(n for n in self.numbers if n not in self.marked)
+
+    @property
+    def wins(self):
+        # assumig 5x5 board
+        rows = [
+            [0,   1,  2,  3,  4],
+            [5,   6,  7,  8,  9],
+            [10, 11, 12, 13, 14],
+            [15, 16, 17, 18, 19],
+            [20, 21, 22, 23, 24],
+        ]
+        cols = [
+            [0, 5, 10, 15, 20],
+            [1, 6, 11, 16, 21],
+            [2, 7, 12, 17, 22],
+            [3, 8, 13, 18, 23],
+            [4, 9, 14, 19, 24],
+        ]
+        def line(line_indexes):
+            return all(self._marked[index] for index in line_indexes)
+        return any(line(row) for row in rows) or any(line(col) for col in cols)
 
     def __repr__(self):
-        r  = '----- Board -----\n'
+        r  = '\n----- Board -----\n'
         r += f'{self.numbers}\n'
+        r += f'{self._marked}\n'
         r += '-----------------\n'
         return r
+
+    @classmethod
+    def from_numbers(cls, numbers):
+        assert len(numbers) == 25, f"Invalid assumption, boards not 5x5. Total numbers: {len(numbers)}"
+        assert len(set(numbers)) == len(numbers), f"Invalid board data. Repeated numbers in: {numbers}"
+        return cls(numbers)
 
 def _draws(line):
     return [int(num) for num in line.split(',')]
 
 def _board(board_data):
     numbers = [int(num) for line in board_data for num in line.split()]
-    return Board(numbers)
+    return Board.from_numbers(numbers)
 
 def _boards(lines):
     boards = []

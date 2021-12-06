@@ -75,6 +75,14 @@ def day_3_1(lns):
 def day_3_2(lns):
     return life_support_rating(lns)
 
+from .bingo import new_game
+
+def day_4_1(lns):
+    game = new_game(lns)
+    while game.winner is None:
+        game.draw()
+    return game.winner.final_score
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
@@ -82,6 +90,7 @@ DAYS = {
     '2.2': day_2_2,
     '3.1': day_3_1,
     '3.2': day_3_2,
+    '4.1': day_4_1,
 }
 
 PARSER = {
@@ -91,5 +100,6 @@ PARSER = {
     '2.2': lambda f: lines(f),
     '3.1': lambda f: lines(f),
     '3.2': lambda f: lines(f),
+    '4.1': lambda f: lines(f),
 }
 

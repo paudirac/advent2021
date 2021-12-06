@@ -27,7 +27,19 @@ class Game:
             self._drawn_index += 1
 
     @property
+    def winner(self):
+        winners = list(filter(lambda board: board.wins, self.boards))
+        if len(winners) == 0:
+            return None
+        elif len(winners) == 1:
+            return winners[0]
+        else:
+            raise Exception(f"Too many winners: {len(winners)}")
+
+    @property
     def called(self):
+        assert self._drawn_index >= 0, "Invalid draw state. Too few draws"
+        assert self._drawn_index < len(self.draws), f"Invalid draw state. Too many draws: {self._drawn_index} vs maximum {len(self.draws)}"
         return self.draws[self._drawn_index]
 
 class Board:
@@ -36,18 +48,24 @@ class Board:
         self.numbers = numbers
         self.marked = set()
         self._marked = [False for _ in numbers]
+        self.last_mark = 0
 
     def mark(self, n):
         try:
             i = self.numbers.index(n)
             self._marked[i] = True
             self.marked.add(n)
+            self.last_mark = n
         except: # Not in the list
             pass
 
     @property
     def score(self):
         return sum(n for n in self.numbers if n not in self.marked)
+
+    @property
+    def final_score(self):
+        return self.score * self.last_mark
 
     @property
     def wins(self):

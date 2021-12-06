@@ -84,12 +84,14 @@ def test_mark_board_number_changes_score():
     assert board.numbers == numbers
     score = sum(n for n in range(1, 25 + 1))
     assert board.score == score
+    assert board.final_score == 0
     for n in range(1, 25 + 1):
         board.mark(n)
         score -= n
         assert board.score == score
+        assert board.final_score == score * n
 
-def test_complete_row_is_wins():
+def test_complete_row_or_column_wins():
     numbers = [
         1,   2,  3,  4,  5,
         6,   7,  8,  9, 10,
@@ -111,3 +113,13 @@ def test_complete_row_is_wins():
         assert not board.wins
     board.mark(23)
     assert board.wins
+
+def test_all_boards():
+    lines = mk_lines(sample_data)
+    game = new_game(lines)
+    assert game.winner == None
+    while game.winner is None:
+        game.draw()
+    assert game.winner is not None
+    assert game.winner.score == 188
+    assert game.winner.final_score == 188 * 24

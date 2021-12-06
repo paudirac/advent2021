@@ -28,13 +28,19 @@ class Game:
 
     @property
     def winner(self):
-        winners = list(filter(lambda board: board.wins, self.boards))
-        if len(winners) == 0:
-            return None
-        elif len(winners) == 1:
-            return winners[0]
+        if len(self.winners) > 0:
+            return self.winners[0]
         else:
-            raise Exception(f"Too many winners: {len(winners)}")
+            return None
+
+    @property
+    def last_winner(self):
+        return self.winners[-1]
+
+    @property
+    def winners(self):
+        won_boards = filter(lambda board: board.wins, self.boards)
+        return list(sorted(won_boards, key=lambda board: board.draws_played_till_won))
 
     @property
     def called(self):
@@ -42,22 +48,33 @@ class Game:
         assert self._drawn_index < len(self.draws), f"Invalid draw state. Too many draws: {self._drawn_index} vs maximum {len(self.draws)}"
         return self.draws[self._drawn_index]
 
+    @property
+    def all_boards_won(self):
+        return all(board.wins for board in self.boards)
+
 class Board:
 
     def __init__(self, numbers):
         self.numbers = numbers
         self.marked = set()
         self._marked = [False for _ in numbers]
-        self.last_mark = 0
+        self.last_mark = None
+        self.draws_played_till_won = 0
 
     def mark(self, n):
-        try:
-            i = self.numbers.index(n)
-            self._marked[i] = True
-            self.marked.add(n)
-            self.last_mark = n
-        except: # Not in the list
-            pass
+        if not self.wins:
+            self.draws_played_till_won += 1
+            try:
+                i = self.numbers.index(n)
+                self._marked[i] = True
+                self.marked.add(n)
+                self.last_mark = n
+                if self.wins:
+                    log.debug(f'win: {self}')
+            except: # Not in the list
+                pass
+        else:
+            pass # stop marking the board when won
 
     @property
     def score(self):
@@ -65,6 +82,9 @@ class Board:
 
     @property
     def final_score(self):
+        #assert self.last_mark is not None, "Invalid end state, no last_mark"
+        if self.last_mark is None:
+            return 0
         return self.score * self.last_mark
 
     @property
@@ -85,7 +105,8 @@ class Board:
             [4, 9, 14, 19, 24],
         ]
         def line(line_indexes):
-            return all(self._marked[index] for index in line_indexes)
+            return all(self.numbers[index] in self.marked for index in line_indexes)
+            #return all(self._marked[index] for index in line_indexes)
         return any(line(row) for row in rows) or any(line(col) for col in cols)
 
     def __repr__(self):
@@ -102,7 +123,7 @@ class Board:
         return cls(numbers)
 
 def _draws(line):
-    return [int(num) for num in line.split(',')]
+    return [int(num.strip()) for num in line.split(',')]
 
 def _board(board_data):
     numbers = [int(num) for line in board_data for num in line.split()]

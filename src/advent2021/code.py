@@ -83,6 +83,15 @@ def day_4_1(lns):
         game.draw()
     return game.winner.final_score
 
+def day_4_2(lns):
+    logging.basicConfig(level=logging.DEBUG)
+    game = new_game(lns)
+    while not game.all_boards_won:
+        game.draw()
+    assert all(board.wins for board in game.boards), "Not all won"
+    return game.last_winner.final_score
+
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
@@ -91,6 +100,7 @@ DAYS = {
     '3.1': day_3_1,
     '3.2': day_3_2,
     '4.1': day_4_1,
+    '4.2': day_4_2,
 }
 
 PARSER = {
@@ -101,5 +111,6 @@ PARSER = {
     '3.1': lambda f: lines(f),
     '3.2': lambda f: lines(f),
     '4.1': lambda f: lines(f),
+    '4.2': lambda f: lines(f),
 }
 

@@ -59,7 +59,7 @@ def test_get_old_18_days():
     assert population.day == 80
     assert len(population) == 5934
 
-def xtest_get_muuuch_older():
+def test_get_muuuch_older():
     lns = mk_lines(sample_data)
     population = parse_initial_population(lns)
     assert len(population) == 5

@@ -29,6 +29,26 @@ class LineDef:
     def is_vertical(self):
         return self.x0 == self.x1
 
+    @property
+    def positions(self):
+        if self.is_horizontal:
+            x0, x1 = min(self.x0, self.x1), max(self.x0, self.x1)
+            return [Position(x, self.y0) for x in range(x0, x1 + 1)]
+        elif self.is_vertical:
+            y0, y1 = min(self.y0, self.y1), max(self.y0, self.y1)
+            return [Position(self.x0, y) for y in range(y0, y1 + 1)]
+        else:
+            step_x = 1 if self.x1 > self.x0 else -1
+            step_y = 1 if self.y1 > self.y0 else -1
+            final = Position(self.x1, self.y1)
+            pos = []
+            curr = Position(self.x0, self.y0)
+            while curr != final:
+                pos.append(curr)
+                curr = Position(curr.x + step_x, curr.y + step_y)
+            pos.append(final)
+            return pos
+
     @classmethod
     def from_spec(cls, spec):
         left, right = spec.split('->')
@@ -55,17 +75,23 @@ class Diagram:
         return { Position(x,y): value for x in xs for y in ys }
 
     def draw(self, line):
-        min_x = min(line.x0, line.x1)
-        max_x = max(line.x0, line.x1)
-        min_y = min(line.y0, line.y1)
-        max_y = max(line.y0, line.y1)
-        for x in range(min_x, max_x + 1):
-            for y in range(min_y, max_y + 1):
-                pos = Position(x,y)
-                self.positions[pos] += 1
+        for pos in line.positions:
+            self.positions[pos] += 1
 
     def positions_with(self, condition):
         return [pos for pos,value in self.positions.items() if condition(value)]
+
+    def __repr__(self):
+        top_left, bottom_right = self.bounds
+        xs = list(range(top_left.x, bottom_right.x + 1))
+        ys = range(top_left.y, bottom_right.y + 1)
+        s = ''
+        for y in ys:
+            for x in xs:
+                val = self.positions[Position(x,y)]
+                s += '.' if val == 0 else str(val)
+            s += '\n'
+        return s
 
 class Lines:
 
@@ -92,6 +118,9 @@ def parse_line_defs(lns):
     specs = _clean_specs(lns)
     return [LineDef.from_spec(spec) for spec in specs]
 
-def new_lines(lns):
+def horizontal_or_vertical_lines(linedef):
+    return linedef.is_horizontal or linedef.is_vertical
+
+def new_lines(lns, condition=horizontal_or_vertical_lines):
     defs = parse_line_defs(lns)
-    return Lines(linedef for linedef in defs if linedef.is_horizontal or linedef.is_vertical)
+    return Lines(linedef for linedef in defs if condition(linedef))

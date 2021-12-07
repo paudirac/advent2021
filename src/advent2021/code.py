@@ -106,6 +106,16 @@ def day_5_1(lns):
     pos_with_at_least_two_lines = diagram.positions_with(at_least_two_lines)
     return len(pos_with_at_least_two_lines)
 
+def day_5_2(lns):
+    lines = new_lines(lns, condition=lambda linedef: True)
+    diagram = Diagram(lines.bounds())
+    top_left, bottom_right = diagram.bounds
+    for line in lines:
+        diagram.draw(line)
+    at_least_two_lines = lambda count: count >= 2
+    pos_with_at_least_two_lines = diagram.positions_with(at_least_two_lines)
+    return len(pos_with_at_least_two_lines)
+
 
 DAYS = {
     '1.1': count_larger,
@@ -117,6 +127,7 @@ DAYS = {
     '4.1': day_4_1,
     '4.2': day_4_2,
     '5.1': day_5_1,
+    '5.2': day_5_2,
 }
 
 PARSER = {
@@ -129,5 +140,6 @@ PARSER = {
     '4.1': lambda f: lines(f),
     '4.2': lambda f: lines(f),
     '5.1': lambda f: lines(f),
+    '5.2': lambda f: lines(f),
 }
 

@@ -115,3 +115,51 @@ def test_at_least_two_lines():
     at_least_two_lines = lambda count: count >= 2
     pos_with_at_least_two_lines = diagram.positions_with(at_least_two_lines)
     assert len(pos_with_at_least_two_lines) == 5
+
+def test_draw_non_horizontal_or_diagonal_line_on_diagram():
+    lns = mk_lines(sample_data)
+    lines = new_lines(lns)
+    diagram = Diagram(lines.bounds())
+    top_left, bottom_right = diagram.bounds
+    assert top_left == (0, 0)
+    assert bottom_right == (9, 9)
+    line = LineDef.from_spec("1,1 -> 3,3")
+    diagram.draw(line)
+    assert diagram.get(Position(1,1)) == 1
+    assert diagram.get(Position(2,2)) == 1
+    assert diagram.get(Position(3,3)) == 1
+    #line = LineDef.from_spec("9,7 -> 7,9")
+    #
+def test_draw_non_horizontal_or_diagonal_line_on_diagram_missing_importan_one_joy():
+    #👼
+    lns = mk_lines(sample_data)
+    lines = new_lines(lns)
+    diagram = Diagram(lines.bounds())
+    top_left, bottom_right = diagram.bounds
+    assert top_left == (0, 0)
+    assert bottom_right == (9, 9)
+    line = LineDef.from_spec("9,7 -> 7,9")
+    diagram.draw(line)
+    assert diagram.get(Position(9,7)) == 1
+    assert diagram.get(Position(8,8)) == 1
+    assert diagram.get(Position(7,9)) == 1
+
+
+import logging
+log = logging.getLogger(__name__)
+
+def xtest_at_least_two_lines_also_diagonal():
+    log.debug('---------------------------')
+    lns = mk_lines(sample_data)
+    lines = new_lines(lns, condition=lambda linedef: True)
+    diagram = Diagram(lines.bounds())
+    top_left, bottom_right = diagram.bounds
+    assert top_left == (0, 0)
+    assert bottom_right == (9, 9)
+    for line in lines:
+        diagram.draw(line)
+    at_least_two_lines = lambda count: count >= 2
+    pos_with_at_least_two_lines = diagram.positions_with(at_least_two_lines)
+    log.debug(f'{diagram=}')
+    assert len(pos_with_at_least_two_lines) == 12
+    log.debug('---------------------------')

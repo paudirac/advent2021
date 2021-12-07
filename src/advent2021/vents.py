@@ -28,8 +28,23 @@ class LineDef:
     def is_vertical(self):
         return self.x0 == self.x1
 
+
+class Diagram:
+
+    def __init__(self, specs):
+        self.specs = specs
+
+    @property
+    def bounds(self):
+        all_xs = set(spec.x0 for spec in self.specs).union(set(spec.x1 for spec in self.specs))
+        all_ys = set(spec.y0 for spec in self.specs).union(set(spec.y1 for spec in self.specs))
+        min_x = min(all_xs)
+        min_y = min(all_ys)
+        max_x = max(all_xs)
+        max_y = max(all_ys)
+        return (min_x, min_y), (max_x, max_y)
+
 def _parse_line_def(spec):
-    log.debug(f'{spec=}')
     left, right = spec.split('->')
     x0,y0 = left.strip().split(',')
     x1, y1 = right.strip().split(',')
@@ -38,3 +53,7 @@ def _parse_line_def(spec):
 def parse_line_defs(lns):
     specs = _clean_specs(lns)
     return [_parse_line_def(spec) for spec in specs]
+
+def new_diagram(lns):
+    specs = parse_line_defs(lns)
+    return Diagram(specs)

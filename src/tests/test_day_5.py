@@ -1,6 +1,7 @@
 from advent2021.vents import (
     parse_line_defs,
     LineDef,
+    new_diagram,
 
     _parse_line_def,
 )
@@ -51,3 +52,10 @@ def test_is_horizontal_is_vertical():
     diagonal = LineDef(0, 0, 42, 42)
     assert not diagonal.is_horizontal
     assert not diagonal.is_vertical
+
+def test_diagram():
+    lns = mk_lines(sample_data)
+    diagram = new_diagram(lns)
+    top_left, bottom_right = diagram.bounds
+    assert top_left == (0, 0)
+    assert bottom_right == (9, 9)

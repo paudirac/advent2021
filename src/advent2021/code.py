@@ -116,6 +116,14 @@ def day_5_2(lns):
     pos_with_at_least_two_lines = diagram.positions_with(at_least_two_lines)
     return len(pos_with_at_least_two_lines)
 
+from .lanternfish import (
+    parse_initial_population,
+)
+
+def day_6_1(lns):
+    population = parse_initial_population(lns)
+    population.get_old(days=80)
+    return len(population)
 
 DAYS = {
     '1.1': count_larger,
@@ -128,6 +136,7 @@ DAYS = {
     '4.2': day_4_2,
     '5.1': day_5_1,
     '5.2': day_5_2,
+    '6.1': day_6_1,
 }
 
 PARSER = {
@@ -141,5 +150,6 @@ PARSER = {
     '4.2': lambda f: lines(f),
     '5.1': lambda f: lines(f),
     '5.2': lambda f: lines(f),
+    '6.1': lambda f: lines(f),
 }
 

@@ -91,6 +91,21 @@ def day_4_2(lns):
     assert all(board.wins for board in game.boards), "Not all won"
     return game.last_winner.final_score
 
+from advent2021.vents import (
+    new_lines,
+    Diagram,
+)
+
+def day_5_1(lns):
+    lines = new_lines(lns)
+    diagram = Diagram(lines.bounds())
+    top_left, bottom_right = diagram.bounds
+    for line in lines:
+        diagram.draw(line)
+    at_least_two_lines = lambda count: count >= 2
+    pos_with_at_least_two_lines = diagram.positions_with(at_least_two_lines)
+    return len(pos_with_at_least_two_lines)
+
 
 DAYS = {
     '1.1': count_larger,
@@ -101,6 +116,7 @@ DAYS = {
     '3.2': day_3_2,
     '4.1': day_4_1,
     '4.2': day_4_2,
+    '5.1': day_5_1,
 }
 
 PARSER = {
@@ -112,5 +128,6 @@ PARSER = {
     '3.2': lambda f: lines(f),
     '4.1': lambda f: lines(f),
     '4.2': lambda f: lines(f),
+    '5.1': lambda f: lines(f),
 }
 

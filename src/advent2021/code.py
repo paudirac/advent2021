@@ -125,6 +125,12 @@ def day_6_1(lns):
     population.get_old(days=80)
     return len(population)
 
+def day_6_2(lns):
+    population = parse_initial_population(lns)
+    population.get_old(days=256)
+    return len(population)
+
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
@@ -137,6 +143,7 @@ DAYS = {
     '5.1': day_5_1,
     '5.2': day_5_2,
     '6.1': day_6_1,
+    '6.2': day_6_2,
 }
 
 PARSER = {
@@ -151,5 +158,6 @@ PARSER = {
     '5.1': lambda f: lines(f),
     '5.2': lambda f: lines(f),
     '6.1': lambda f: lines(f),
+    '6.2': lambda f: lines(f),
 }
 

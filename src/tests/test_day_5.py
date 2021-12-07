@@ -1,9 +1,9 @@
 from advent2021.vents import (
     parse_line_defs,
     LineDef,
-    new_diagram,
-
-    _parse_line_def,
+    new_lines,
+    Diagram,
+    Position,
 )
 
 def mk_lines(s):
@@ -23,7 +23,7 @@ sample_data = """0,9 -> 5,9
 """
 
 def test_parse_line_def():
-    assert _parse_line_def("0,9 -> 5,9") == LineDef(0, 9, 5, 9)
+    assert LineDef.from_spec("0,9 -> 5,9") == LineDef(0, 9, 5, 9)
 
 def test_parse_line_def():
     lns = mk_lines(sample_data)
@@ -53,9 +53,65 @@ def test_is_horizontal_is_vertical():
     assert not diagonal.is_horizontal
     assert not diagonal.is_vertical
 
+def test_lines():
+    lns = mk_lines(sample_data)
+    lines = new_lines(lns)
+    top_left, bottom_right = lines.bounds()
+    assert top_left == (0, 0)
+    assert bottom_right == (9, 9)
+
 def test_diagram():
     lns = mk_lines(sample_data)
-    diagram = new_diagram(lns)
+    lines = new_lines(lns)
+    diagram = Diagram(lines.bounds())
     top_left, bottom_right = diagram.bounds
     assert top_left == (0, 0)
     assert bottom_right == (9, 9)
+    x0, y0 = top_left
+    x1, y1 = bottom_right
+    for x in range(top_left.x, bottom_right.x + 1):
+        for y in range(top_left.y, bottom_right.y + 1):
+            assert diagram.get(Position(x, y)) == 0
+
+def test_position_is_hashable():
+    pos1 = Position(42, 0)
+    pos2 = Position(42, 0)
+    pos3 = Position(42, 42)
+    sentinel = object()
+    d = {
+        pos1: 42,
+    }
+    assert d[pos1] == 42
+    assert d[pos2] == 42
+    assert d.get(pos3, sentinel) == sentinel
+
+def test_draw_line_on_diagram():
+    lns = mk_lines(sample_data)
+    lines = new_lines(lns)
+    diagram = Diagram(lines.bounds())
+    top_left, bottom_right = diagram.bounds
+    assert top_left == (0, 0)
+    assert bottom_right == (9, 9)
+    line = LineDef.from_spec("0,9 -> 5,9")
+    diagram.draw(line)
+    assert diagram.get(Position(0,9)) == 1
+    assert diagram.get(Position(1,9)) == 1
+    assert diagram.get(Position(2,9)) == 1
+    assert diagram.get(Position(3,9)) == 1
+    assert diagram.get(Position(4,9)) == 1
+    assert diagram.get(Position(5,9)) == 1
+    greater_or_1 = diagram.positions_with(lambda count: count >= 1)
+    assert len(greater_or_1) == 6
+
+def test_at_least_two_lines():
+    lns = mk_lines(sample_data)
+    lines = new_lines(lns)
+    diagram = Diagram(lines.bounds())
+    top_left, bottom_right = diagram.bounds
+    assert top_left == (0, 0)
+    assert bottom_right == (9, 9)
+    for line in lines:
+        diagram.draw(line)
+    at_least_two_lines = lambda count: count >= 2
+    pos_with_at_least_two_lines = diagram.positions_with(at_least_two_lines)
+    assert len(pos_with_at_least_two_lines) == 5

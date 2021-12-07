@@ -27,7 +27,6 @@ class Population:
 
     def get_old(self, days=1):
         for _ in range(days):
-            log.debug(f'{self.day=} {len(self)}')
             def evolve(clock, n):
                 if clock == 0:
                     return (6, n, n)

@@ -21,27 +21,22 @@ def test_initial_population():
 
 def test_one_lanternfish():
     population = Population.from_clocks([3])
-    log.debug(f'{population}')
     assert len(population) == 1
     assert population.day == 0
 
     population.get_old()
-    log.debug(f'{population}')
     assert population.day == 1
     assert len(population) == 1
 
     population.get_old()
-    log.debug(f'{population}')
     assert population.day == 2
     assert len(population) == 1
 
     population.get_old()
-    log.debug(f'{population}')
     assert population.day == 3
     assert len(population) == 1
 
     population.get_old()
-    log.debug(f'{population}')
     assert population.day == 4
     assert len(population) == 2
 
@@ -51,7 +46,6 @@ def test_get_old_18_days():
     assert len(population) == 5
     assert population.day == 0
     population.get_old(days=18)
-    log.debug(f'{population}')
     assert len(population) == 26
     sample_population_clocks_18 = [6,0,6,4,5,6,0,1,1,2,6,0,1,1,1,2,2,3,3,4,6,7,8,8,8,8]
     assert len(population) == len(sample_population_clocks_18)

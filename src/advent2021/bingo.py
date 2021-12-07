@@ -69,8 +69,6 @@ class Board:
                 self._marked[i] = True
                 self.marked.add(n)
                 self.last_mark = n
-                if self.wins:
-                    log.debug(f'win: {self}')
             except: # Not in the list
                 pass
         else:

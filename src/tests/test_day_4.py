@@ -41,7 +41,6 @@ def test_parse_bingo():
         7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
     ]
     assert len(game.boards) == 3
-    log.debug(f'{game.boards=}')
 
 def test_draw():
     lines = mk_lines(sample_data)
@@ -136,6 +135,5 @@ def test_all_boards_win():
         game.draw()
     assert all(board.wins for board in game.boards), "Not all won"
     assert game.last_winner is not None
-    log.debug(f'{game.last_winner=}')
     assert game.last_winner.score == 148
     assert game.last_winner.final_score == 148 * 13

@@ -130,6 +130,17 @@ def day_6_2(lns):
     population.get_old(days=256)
     return len(population)
 
+from .crabs import (
+    parse_swarm,
+    Aligner,
+)
+
+def day_7_1(lns):
+    swarm = parse_swarm(lns)
+    aligner = Aligner(swarm)
+    (pos, fuel) = aligner.minimum_fuel()
+    return f'Minimum fuel: {fuel} to align to position: {pos}'
+
 
 DAYS = {
     '1.1': count_larger,
@@ -144,6 +155,7 @@ DAYS = {
     '5.2': day_5_2,
     '6.1': day_6_1,
     '6.2': day_6_2,
+    '7.1': day_7_1,
 }
 
 PARSER = {
@@ -159,5 +171,6 @@ PARSER = {
     '5.2': lambda f: lines(f),
     '6.1': lambda f: lines(f),
     '6.2': lambda f: lines(f),
+    '7.1': lambda f: lines(f),
 }
 

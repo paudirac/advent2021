@@ -133,6 +133,7 @@ def day_6_2(lns):
 from .crabs import (
     parse_swarm,
     Aligner,
+    increasing_rate,
 )
 
 def day_7_1(lns):
@@ -141,6 +142,11 @@ def day_7_1(lns):
     (pos, fuel) = aligner.minimum_fuel()
     return f'Minimum fuel: {fuel} to align to position: {pos}'
 
+def day_7_2(lns):
+    swarm = parse_swarm(lns)
+    aligner = Aligner(swarm, individual_cost=increasing_rate)
+    (pos, fuel) = aligner.minimum_fuel()
+    return f'Minimum fuel: {fuel} to align to position: {pos}'
 
 DAYS = {
     '1.1': count_larger,
@@ -156,6 +162,7 @@ DAYS = {
     '6.1': day_6_1,
     '6.2': day_6_2,
     '7.1': day_7_1,
+    '7.2': day_7_2,
 }
 
 PARSER = {
@@ -172,5 +179,6 @@ PARSER = {
     '6.1': lambda f: lines(f),
     '6.2': lambda f: lines(f),
     '7.1': lambda f: lines(f),
+    '7.2': lambda f: lines(f),
 }
 

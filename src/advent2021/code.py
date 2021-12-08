@@ -148,6 +148,18 @@ def day_7_2(lns):
     (pos, fuel) = aligner.minimum_fuel()
     return f'Minimum fuel: {fuel} to align to position: {pos}'
 
+from .displays import (
+    parse_entries,
+    is_easy,
+)
+
+def day_8_1(lns):
+    entries = parse_entries(lns)
+    outputs = entries.outputs
+    all_outputs = entries.all_outputs
+    easy_ones = [out for out in all_outputs if is_easy(out)]
+    return len(easy_ones)
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
@@ -163,6 +175,7 @@ DAYS = {
     '6.2': day_6_2,
     '7.1': day_7_1,
     '7.2': day_7_2,
+    '8.1': day_8_1,
 }
 
 PARSER = {
@@ -180,5 +193,6 @@ PARSER = {
     '6.2': lambda f: lines(f),
     '7.1': lambda f: lines(f),
     '7.2': lambda f: lines(f),
+    '8.1': lambda f: lines(f),
 }
 

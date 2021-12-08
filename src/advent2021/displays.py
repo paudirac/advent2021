@@ -33,6 +33,27 @@ b    .  b    .  .    c  b    c  b    c
 import logging
 log = logging.getLogger(__name__)
 
+EASY_ONES = [2, 4, 3, 7]
+
+def normalize_key(s):
+    return ''.join(sorted(s))
+
+class Decoder(dict):
+
+    def __setitem__(self, key, value):
+        nkey = normalize_key(key)
+        super().__setitem__(nkey, value)
+
+    def __getitem__(self, key):
+        nkey = normalize_key(key)
+        if nkey not in self:
+            return key
+        return super().__getitem__(nkey)
+
+    @classmethod
+    def with_normalized_mappings(cls, mappings):
+        return cls((normalize_key(k), v) for k,v in mappings)
+
 class Entry:
 
     def __init__(self, patterns, outputs):
@@ -41,8 +62,12 @@ class Entry:
 
     @classmethod
     def from_spec(cls, spec):
-        patterns, outputs = spec.split('|')
-        return cls(patterns.strip(), outputs.split())
+        patterns, all_outputs = spec.split('|')
+        outputs = all_outputs.split()
+        mappings = [(out, len(out)) for out in outputs if len(out) in EASY_ONES]
+        decoder = Decoder.with_normalized_mappings(mappings)
+        translated_outputs = [decoder[out] for out in outputs]
+        return cls(patterns.strip(), translated_outputs)
 
     def __repr__(self):
         return f'Entry(patterns="{self.patterns}", outputs={self.outputs})'
@@ -69,14 +94,4 @@ class Entries:
 
 def parse_entries(lns):
     specs = list(lns)
-    return Entries(parse_entry(spec) for spec in specs if len(spec) > 0)
-
-# Assuming active_segments do not contain repeated values
-def is_1(active_segments): return len(active_segments) == 2
-def is_4(active_segments): return len(active_segments) == 4
-def is_7(active_segments): return len(active_segments) == 3
-def is_8(active_segments): return len(active_segments) == 7
-
-EASY_CONDITIONS = [is_1, is_4, is_7, is_8]
-def is_easy(active_segments):
-    return any(check(active_segments) for check in EASY_CONDITIONS)
+    return Entries(Entry.from_spec(spec) for spec in specs if len(spec) > 0)

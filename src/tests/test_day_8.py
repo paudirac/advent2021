@@ -1,14 +1,14 @@
+import pytest
+
 import logging
 log = logging.getLogger(__name__)
 
 from advent2021.displays import (
     parse_entry,
     parse_entries,
-    is_1,
-    is_4,
-    is_7,
-    is_8,
-    is_easy,
+    normalize_key,
+    Decoder,
+    EASY_ONES,
 )
 
 def mk_lines(s):
@@ -37,12 +37,26 @@ def test_notes():
     entries = parse_entries(lns)
     assert len(entries) == 10
 
-def test_are_easy():
-    # Assuming entries do not contain repeated values in any singnal or output values
-    assert is_1("ab")
-    assert is_4("abcd")
-    assert is_7("abc")
-    assert is_8("abcdefg")
+def test_key_normalizer():
+    assert normalize_key('cg') == 'cg'
+    assert normalize_key('gc') == 'cg'
+    assert normalize_key('fdcagb') == 'abcdfg'
+    assert normalize_key('cbg') == 'bcg'
+
+def test_decoder_leaves_unknown_keys_untoucked():
+    decoder = Decoder()
+    assert decoder['patata'] == 'patata'
+
+def test_decoder_normalizes_key_access():
+    decoder = Decoder()
+    decoder['cg'] = 1
+    assert decoder['cg'] == 1
+    assert decoder['gc'] == 1
+    decoder['cefg'] = 4
+    assert decoder['cefg'] == 4
+    assert decoder['ecfg'] == 4
+    assert decoder['cfeg'] == 4
+    assert decoder['gcef'] == 4
 
 def test_easy_digits():
     lns = mk_lines(sample_data)
@@ -51,5 +65,5 @@ def test_easy_digits():
     assert len(outputs) == 10
     all_outputs = entries.all_outputs
     assert len(all_outputs) == 40
-    easy_ones = [out for out in all_outputs if is_easy(out)]
+    easy_ones = [out for out in all_outputs if out in EASY_ONES]
     assert len(easy_ones) == 26

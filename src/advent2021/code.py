@@ -150,14 +150,14 @@ def day_7_2(lns):
 
 from .displays import (
     parse_entries,
-    is_easy,
+    EASY_ONES,
 )
 
 def day_8_1(lns):
     entries = parse_entries(lns)
     outputs = entries.outputs
     all_outputs = entries.all_outputs
-    easy_ones = [out for out in all_outputs if is_easy(out)]
+    easy_ones = [out for out in all_outputs if out in EASY_ONES]
     return len(easy_ones)
 
 DAYS = {

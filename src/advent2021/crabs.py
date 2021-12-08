@@ -3,7 +3,7 @@ def constant_rate(_from, to):
 
 def increasing_rate(_from, to):
     delta = abs(_from - to)
-    return sum(i for i in range(1, delta + 1))
+    return delta * (delta + 1) / 2
 
 class Swarm:
 

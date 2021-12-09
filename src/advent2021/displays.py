@@ -62,12 +62,15 @@ class Entry:
 
     @classmethod
     def from_spec(cls, spec):
-        patterns, all_outputs = spec.split('|')
+        all_patterns, all_outputs = spec.split('|')
+        patterns = all_patterns.split()
         outputs = all_outputs.split()
-        mappings = [(out, len(out)) for out in outputs if len(out) in EASY_ONES]
-        decoder = Decoder.with_normalized_mappings(mappings)
+        out_mappings = [(out, len(out)) for out in outputs if len(out) in EASY_ONES]
+        pat_mappings = [(pat, len(pat)) for pat in patterns if len(pat) in EASY_ONES]
+        decoder = Decoder.with_normalized_mappings(out_mappings + pat_mappings)
         translated_outputs = [decoder[out] for out in outputs]
-        return cls(patterns.strip(), translated_outputs)
+        translated_patterns = [decoder[pat] for pat in patterns]
+        return cls(translated_patterns, translated_outputs)
 
     def __repr__(self):
         return f'Entry(patterns="{self.patterns}", outputs={self.outputs})'

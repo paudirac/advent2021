@@ -27,10 +27,12 @@ egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
 gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 """
 
+@pytest.mark.only
 def test_parse_enty():
     entry = parse_entry("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf")
-    assert entry.patterns == "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab"
+    assert entry.patterns == [7, 'cdfbe', 'gcdfa', 'fbcad', 3, 'cefabd', 'cdfgeb', 4, 'cagedb', 2]
     assert entry.outputs == ["cdfeb", "fcadb", "cdfeb", "cdbaf"]
+    log.debug(f'{entry=}')
 
 def test_notes():
     lns = mk_lines(sample_data)
@@ -67,3 +69,23 @@ def test_easy_digits():
     assert len(all_outputs) == 40
     easy_ones = [out for out in all_outputs if out in EASY_ONES]
     assert len(easy_ones) == 26
+
+@pytest.mark.only
+def test_something():
+    something = [
+        ("acedgfb", 8),
+        ("cdfbe", 5),
+        ("gcdfa", 2),
+        ("fbcad", 3),
+        ("dab", 7),
+        ("cefabd", 9),
+        ("cdfgeb", 6),
+        ("eafb", 4),
+        ("cagedb", 0),
+        ("ab", 1),
+    ]
+    easy = [(normalize_key(k), v) for k,v in something if v in EASY_ONES]
+    something2 = [(normalize_key(k), v) for k,v in something if v not in EASY_ONES]
+    log.debug(f'{easy=}')
+    log.debug(f'{something2=}')
+    assert False

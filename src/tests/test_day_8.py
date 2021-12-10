@@ -9,6 +9,7 @@ from advent2021.displays import (
     normalize_key,
     Decoder,
     EASY_ONES,
+    Number,
 )
 
 def mk_lines(s):
@@ -27,7 +28,6 @@ egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
 gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 """
 
-@pytest.mark.only
 def test_parse_enty():
     entry = parse_entry("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf")
     assert entry.patterns == [7, 'cdfbe', 'gcdfa', 'fbcad', 3, 'cefabd', 'cdfgeb', 4, 'cagedb', 2]
@@ -70,7 +70,6 @@ def test_easy_digits():
     easy_ones = [out for out in all_outputs if out in EASY_ONES]
     assert len(easy_ones) == 26
 
-@pytest.mark.only
 def test_something():
     something = [
         ("acedgfb", 8),
@@ -89,3 +88,22 @@ def test_something():
     log.debug(f'{easy=}')
     log.debug(f'{something2=}')
     assert False
+
+@pytest.mark.only
+def test_algebra():
+    Z     = Number.from_str("abcefg")
+    I     = Number.from_str("cf")
+    II    = Number.from_str("acdeg")
+    III   = Number.from_str("acdfg")
+    IV    = Number.from_str("bcdf")
+    V     = Number.from_str("abdfg")
+    VI    = Number.from_str("abdefg")
+    VII   = Number.from_str("acf")
+    VIII  = Number.from_str("abcdefg")
+    IX    = Number.from_str("abcdfg")
+    Blank = Number.from_str("")
+    #log.debug(f'{IV=} + {VII=} == {IX=}')
+    assert Z + VIII == VIII
+    assert IX + IV == IX
+    assert VIII - VII - VI == Blank
+    #assert IV + VII == IX

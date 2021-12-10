@@ -38,6 +38,41 @@ EASY_ONES = [2, 4, 3, 7]
 def normalize_key(s):
     return ''.join(sorted(s))
 
+class Number:
+
+    def __init__(self, code):
+        if not isinstance(code, set):
+            raise ValueError(f'{code} is not a set')
+        self.code = code
+
+    def __add__(self, other):
+        if not isinstance(other, Number):
+            raise ValueError(f'{other} is not a Number')
+        return Number(self.code.union(other.code))
+
+    def __sub__(self, other):
+        if not isinstance(other, Number):
+            raise ValueError(f'{other} is not a Number')
+        return Number(self.code.difference(other.code))
+
+    def __eq__(self, other):
+        if isinstance(other, Number):
+            return self.code == other.code
+        else:
+            return False
+
+    def __len__(self):
+        return len(self.code)
+
+    @classmethod
+    def from_str(cls, code_string):
+        return cls(set(c for c in code_string))
+
+    def __repr__(self):
+        normalized = ''.join(sorted(c for c in self.code))
+        return f"""Number(code="{normalized}")"""
+
+
 class Decoder(dict):
 
     def __setitem__(self, key, value):

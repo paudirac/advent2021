@@ -166,6 +166,20 @@ def day_8_2(lns):
     outputs = [entry.output for entry in entries]
     return sum(outputs)
 
+from advent2021.smoke import (
+    parse_heightmap,
+    is_local_min,
+    risk_level,
+)
+
+def day_9_1(lns):
+    logging.basicConfig(level=logging.DEBUG)
+    heightmap = parse_heightmap(lns)
+    local_mins = heightmap.map_positions(is_local_min)
+    low_points = [heightmap.get((x, y)) for x,y,is_min in local_mins if is_min]
+    return sum(map(risk_level, low_points))
+
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
@@ -183,6 +197,7 @@ DAYS = {
     '7.2': day_7_2,
     '8.1': day_8_1,
     '8.2': day_8_2,
+    '9.1': day_9_1,
 }
 
 PARSER = {
@@ -202,5 +217,6 @@ PARSER = {
     '7.2': lambda f: lines(f),
     '8.1': lambda f: lines(f),
     '8.2': lambda f: lines(f),
+    '9.1': lambda f: lines(f),
 }
 

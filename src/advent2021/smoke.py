@@ -1,4 +1,6 @@
 import pprint
+import logging
+log = logging.getLogger(__name__)
 
 from collections import namedtuple
 Size = namedtuple('Size', 'I J')
@@ -73,7 +75,8 @@ class HeightMap:
         return f'HeightMap(rows={pprint.pformat(self.data)})'
 
 def parse_heightmap(lns):
-    rows = [[int(c) for c in ln] for ln in lns if len(ln)]
+    rows = list(ln.strip() for ln in lns if len(ln) > 0)
+    rows = [[int(c) for c in ln] for ln in rows]
     return HeightMap.from_rows(rows)
 
 def risk_level(point):

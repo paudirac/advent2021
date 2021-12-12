@@ -180,3 +180,16 @@ def test_detections():
     assert Z - IX == II - III
     assert zero(NUMBERS, ii=II, iii=III, vi=VI) == Z
     assert nine(NUMBERS, ii=II, iii=III, vi=VI) == IX
+
+@pytest.mark.only
+def test_values():
+    assert one(NUMBERS).value == 1
+    assert four(NUMBERS).value == 4
+    assert seven(NUMBERS).value == 7
+    assert eight(NUMBERS).value == 8
+    assert six(NUMBERS, vii=VII, viii=VIII, blank=Blank).value == 6
+    assert five(NUMBERS).value == 5
+    assert two(NUMBERS, v=V, viii=VIII).value == 2
+    assert three(NUMBERS, ii=II, v=V).value == 3
+    assert zero(NUMBERS, ii=II, iii=III, vi=VI).value == 0
+    assert nine(NUMBERS, ii=II, iii=III, vi=VI).value == 9

@@ -89,21 +89,94 @@ def test_something():
     log.debug(f'{something2=}')
     assert False
 
-@pytest.mark.only
+Z     = Number.from_str("abcefg")
+I     = Number.from_str("cf")
+II    = Number.from_str("acdeg")
+III   = Number.from_str("acdfg")
+IV    = Number.from_str("bcdf")
+V     = Number.from_str("abdfg")
+VI    = Number.from_str("abdefg")
+VII   = Number.from_str("acf")
+VIII  = Number.from_str("abcdefg")
+IX    = Number.from_str("abcdfg")
+Blank = Number.from_str("")
+
+def test_lenghts():
+    # Easy ones
+    assert len(I) == 2
+    assert len(IV) == 4
+    assert len(VII) == 3
+    assert len(VIII) == 7
+    # Len 5
+    assert len(II) == 5
+    assert len(III) == 5
+    assert len(V) == 5
+    # Len 6
+    assert len(Z) == 6
+    assert len(VI) == 6
+    assert len(IX) == 6
+
+    assert len(Blank) == 0
+
+def test_identity():
+    a = Number.from_str("abc")
+    b = Number.from_str("abc")
+    d = Number.from_str("abd")
+    assert a == b
+    assert a != d
+
 def test_algebra():
-    Z     = Number.from_str("abcefg")
-    I     = Number.from_str("cf")
-    II    = Number.from_str("acdeg")
-    III   = Number.from_str("acdfg")
-    IV    = Number.from_str("bcdf")
-    V     = Number.from_str("abdfg")
-    VI    = Number.from_str("abdefg")
-    VII   = Number.from_str("acf")
-    VIII  = Number.from_str("abcdefg")
-    IX    = Number.from_str("abcdfg")
-    Blank = Number.from_str("")
-    #log.debug(f'{IV=} + {VII=} == {IX=}')
-    assert Z + VIII == VIII
-    assert IX + IV == IX
+    assert len(VI) == 6
     assert VIII - VII - VI == Blank
     #assert IV + VII == IX
+
+from advent2021.displays import (
+    is_one,
+    one,
+    is_four,
+    four,
+    is_seven,
+    seven,
+    is_eight,
+    eight,
+    is_six,
+    six,
+    five,
+    two,
+    three,
+    zero,
+    nine,
+)
+
+NUMBERS = [Z, I, II, III, IV, V, VI, VII, VIII, IX, Blank]
+
+def test_detections():
+    # Easy ones I IV VII VIII
+    assert is_one(I)
+    assert all(not is_one(n) for n in NUMBERS if n != I)
+    assert one(NUMBERS) == I
+    assert is_four(IV)
+    assert all(not is_four(n) for n in NUMBERS if n != IV)
+    assert four(NUMBERS) == IV
+    assert is_seven(VII)
+    assert all(not is_seven(n) for n in NUMBERS if n != VII)
+    assert seven(NUMBERS) == VII
+    assert is_eight(VIII)
+    assert all(not is_eight(n) for n in NUMBERS if n != VIII)
+    assert eight(NUMBERS) == VIII
+
+    # VI
+    assert is_six(VI, vii=VII, viii=VIII, blank=Blank)
+    assert all(not is_six(n, vii=VII, viii=VIII, blank=Blank) for n in NUMBERS if n != VI)
+    assert six(NUMBERS, vii=VII, viii=VIII, blank=Blank) == VI
+
+    # II III V
+    assert len(II) == 5 and len(III) == 5 and len(V) == 5
+    candidates = [n for n in NUMBERS if len(n) == 5]
+    assert five(NUMBERS) == V
+    assert two(NUMBERS, v=V, viii=VIII) == II
+    assert three(NUMBERS, ii=II, v=V) == III
+
+    assert Z - IX == II - III
+    assert zero(NUMBERS, ii=II, iii=III, vi=VI) == Z
+    assert nine(NUMBERS, ii=II, iii=III, vi=VI) == IX

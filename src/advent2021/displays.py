@@ -38,6 +38,65 @@ EASY_ONES = [2, 4, 3, 7]
 def normalize_key(s):
     return ''.join(sorted(s))
 
+def is_one(number):
+    return len(number) == 2
+
+def one(numbers):
+    return [n for n in numbers if is_one(n)][0]
+
+def is_four(number):
+    return len(number) == 4
+
+def four(numbers):
+    return [n for n in numbers if is_four(n)][0]
+
+def is_seven(number):
+    return len(number) == 3
+
+def seven(numbers):
+    return [n for n in numbers if is_seven(n)][0]
+
+def is_eight(number):
+    return len(number) == 7
+
+def eight(numbers):
+    return [n for n in numbers if is_eight(n)][0]
+
+def is_six(number, vii, viii, blank):
+    return len(number) == 6 and viii - vii - number == blank
+
+def six(numbers, vii, viii, blank):
+    return [n for n in numbers if is_six(n, vii=vii, viii=viii, blank=blank)][0]
+
+def five(numbers):
+    a, b, c = [n for n in numbers if len(n) == 5]
+    if a + b not in numbers:
+        return c
+    if a + c not in numbers:
+        return b
+    else:
+        return a
+
+def two(numbers, v, viii):
+    return [n for n in numbers if len(n) == 5 and n + v == viii][0]
+
+def three(numbers, ii, v):
+    return [n for n in numbers if len(n) == 5 and n != ii and n != v][0]
+
+def zero(numbers, ii, iii, vi):
+    a, b = [n for n in numbers if len(n) == 6 and n != vi]
+    if a - b == ii - iii:
+        return a
+    else:
+        return b
+
+def nine(numbers, ii, iii, vi):
+    a, b = [n for n in numbers if len(n) == 6 and n != vi]
+    if a - b == ii - iii:
+        return b
+    else:
+        return a
+
 class Number:
 
     def __init__(self, code):
@@ -71,6 +130,7 @@ class Number:
     def __repr__(self):
         normalized = ''.join(sorted(c for c in self.code))
         return f"""Number(code="{normalized}")"""
+
 
 
 class Decoder(dict):

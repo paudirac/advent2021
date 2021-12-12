@@ -160,6 +160,11 @@ def day_8_1(lns):
     easy_ones = [out for out in all_outputs if out in EASY_ONES]
     return len(easy_ones)
 
+def day_8_2(lns):
+    entries = parse_entries(lns)
+    outputs = [entry.output for entry in entries]
+    return sum(outputs)
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
@@ -176,6 +181,7 @@ DAYS = {
     '7.1': day_7_1,
     '7.2': day_7_2,
     '8.1': day_8_1,
+    '8.2': day_8_2,
 }
 
 PARSER = {
@@ -194,5 +200,6 @@ PARSER = {
     '7.1': lambda f: lines(f),
     '7.2': lambda f: lines(f),
     '8.1': lambda f: lines(f),
+    '8.2': lambda f: lines(f),
 }
 

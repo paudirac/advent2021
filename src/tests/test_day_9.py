@@ -22,6 +22,9 @@ from advent2021.smoke import (
     adjacent,
     Position,
     is_local_min,
+    grad,
+    walk_from_while,
+    less_than_9,
 )
 
 def test_risklevel():
@@ -104,3 +107,31 @@ def test_lowpoints():
     log.debug(f'{low_points=}')
     assert low_points == [1, 0, 5, 5]
     assert sum(map(risk_level, low_points)) == 15
+
+def test_max_basins():
+    lns = mk_lines(sample_data)
+    heightmap = parse_heightmap(lns)
+    local_mins_map = heightmap.map_positions(is_local_min)
+    local_mins = [Position(x,y) for x,y,is_min in local_mins_map if is_min]
+    log.debug(f'{local_mins=}')
+    basins = [walk_from_while(pos, less_than_9, heightmap) for pos in local_mins]
+    log.debug(f'{basins=}')
+    basins_lengths = sorted([len(basin) for basin in basins], reverse=True)
+    log.debug(f'{basins_lengths=}')
+    from functools import reduce
+    assert reduce(lambda x,y: x * y, basins_lengths[:3]) == 1134
+
+def test_walk_from():
+    lns = mk_lines(sample_data)
+    heightmap = parse_heightmap(lns)
+    basin = walk_from_while(Position(1, 0), less_than_9, heightmap, visited=[])
+    log.debug(f'{basin=}')
+    assert len(basin) == 3
+    basin = walk_from_while(Position(9, 0), less_than_9, heightmap, visited=[])
+    assert len(basin) == 9
+    log.debug(f'{basin=}')
+    basin = walk_from_while(Position(2, 2), less_than_9, heightmap, visited=[])
+    assert len(basin) == 14
+    log.debug(f'{basin=}')
+    basin = walk_from_while(Position(6, 4), less_than_9, heightmap, visited=[])
+    assert len(basin) == 9

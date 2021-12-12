@@ -166,10 +166,13 @@ def day_8_2(lns):
     outputs = [entry.output for entry in entries]
     return sum(outputs)
 
+import advent2021
 from advent2021.smoke import (
     parse_heightmap,
     is_local_min,
     risk_level,
+    walk_from_while,
+    less_than_9,
 )
 
 def day_9_1(lns):
@@ -178,6 +181,16 @@ def day_9_1(lns):
     local_mins = heightmap.map_positions(is_local_min)
     low_points = [heightmap.get((x, y)) for x,y,is_min in local_mins if is_min]
     return sum(map(risk_level, low_points))
+
+def day_9_2(lns):
+    logging.basicConfig(level=logging.DEBUG)
+    heightmap = parse_heightmap(lns)
+    local_mins_map = heightmap.map_positions(is_local_min)
+    local_mins = [advent2021.smoke.Position(x,y) for x,y,is_min in local_mins_map if is_min]
+    basins = [walk_from_while(pos, less_than_9, heightmap) for pos in local_mins]
+    basins_lengths = sorted([len(basin) for basin in basins], reverse=True)
+    from functools import reduce
+    return reduce(lambda x,y: x * y, basins_lengths[:3])
 
 
 DAYS = {
@@ -198,6 +211,7 @@ DAYS = {
     '8.1': day_8_1,
     '8.2': day_8_2,
     '9.1': day_9_1,
+    '9.2': day_9_2,
 }
 
 PARSER = {
@@ -218,5 +232,6 @@ PARSER = {
     '8.1': lambda f: lines(f),
     '8.2': lambda f: lines(f),
     '9.1': lambda f: lines(f),
+    '9.2': lambda f: lines(f),
 }
 

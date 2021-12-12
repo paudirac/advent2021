@@ -41,6 +41,9 @@ def adjacent(position, size):
 def is_local_min(pos, m):
     return all(m.get(a) - m.get(pos) > 0 for a in adjacent(pos, m.size))
 
+def grad(pos, m):
+    return [m.get(a) - m.get(pos) for a in adjacent(pos, m.size)]
+
 
 class HeightMap:
 
@@ -73,6 +76,29 @@ class HeightMap:
 
     def __repr__(self):
         return f'HeightMap(rows={pprint.pformat(self.data)})'
+
+
+def adjacent_cond(position, m, cond):
+    up    = position + Position(0, -1)
+    down  = position + Position(0, 1)
+    left  = position + Position(-1, 0)
+    right = position + Position(1, 0)
+    neighbors = [up, down, left, right]
+    return [pos for pos in neighbors if inside_bounds(pos, m.size) and cond(pos, m)]
+
+def less_than_9(pos, m):
+    return m.get(pos) < 9
+
+def walk_from_while(pos, cond, m, visited=[]):
+    if not cond(pos, m) or pos in visited:
+        return []
+    else:
+        visited.append(pos)
+        others = []
+        neigh = adjacent_cond(pos, m, cond)
+        for n in [n for n in neigh if n not in visited]:
+            others += walk_from_while(n, cond, m, visited)
+        return [pos] + others
 
 def parse_heightmap(lns):
     rows = list(ln.strip() for ln in lns if len(ln) > 0)

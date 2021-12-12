@@ -30,14 +30,20 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 
 def test_parse_enty():
     entry = parse_entry("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf")
-    assert entry.patterns == [7, 'cdfbe', 'gcdfa', 'fbcad', 3, 'cefabd', 'cdfgeb', 4, 'cagedb', 2]
-    assert entry.outputs == ["cdfeb", "fcadb", "cdfeb", "cdbaf"]
+    #assert entry.patterns == [7, 'cdfbe', 'gcdfa', 'fbcad', 3, 'cefabd', 'cdfgeb', 4, 'cagedb', 2]
+    #assert entry.outputs == ["cdfeb", "fcadb", "cdfeb", "cdbaf"]
+    assert entry.patterns == [8, 5, 2, 3, 7, 9, 6, 4, 0, 1]
+    assert entry.outputs == [5, 3, 5, 3]
+    assert entry.output == 5353
     log.debug(f'{entry=}')
 
 def test_notes():
     lns = mk_lines(sample_data)
     entries = parse_entries(lns)
     assert len(entries) == 10
+    outputs = [entry.output for entry in entries]
+    assert outputs == [8394, 9781, 1197, 9361, 4873, 8418, 4548, 1625, 8717, 4315]
+    assert sum(outputs) == 61229
 
 def test_key_normalizer():
     assert normalize_key('cg') == 'cg'
@@ -67,27 +73,9 @@ def test_easy_digits():
     assert len(outputs) == 10
     all_outputs = entries.all_outputs
     assert len(all_outputs) == 40
-    easy_ones = [out for out in all_outputs if out in EASY_ONES]
+    easy_ones = [out for out in all_outputs if out in [1, 4, 7, 8]]
+    log.debug(f'{easy_ones=}')
     assert len(easy_ones) == 26
-
-def test_something():
-    something = [
-        ("acedgfb", 8),
-        ("cdfbe", 5),
-        ("gcdfa", 2),
-        ("fbcad", 3),
-        ("dab", 7),
-        ("cefabd", 9),
-        ("cdfgeb", 6),
-        ("eafb", 4),
-        ("cagedb", 0),
-        ("ab", 1),
-    ]
-    easy = [(normalize_key(k), v) for k,v in something if v in EASY_ONES]
-    something2 = [(normalize_key(k), v) for k,v in something if v not in EASY_ONES]
-    log.debug(f'{easy=}')
-    log.debug(f'{something2=}')
-    assert False
 
 Z     = Number.from_str("abcefg")
 I     = Number.from_str("cf")
@@ -181,7 +169,6 @@ def test_detections():
     assert zero(NUMBERS, ii=II, iii=III, vi=VI) == Z
     assert nine(NUMBERS, ii=II, iii=III, vi=VI) == IX
 
-@pytest.mark.only
 def test_values():
     assert one(NUMBERS).value == 1
     assert four(NUMBERS).value == 4

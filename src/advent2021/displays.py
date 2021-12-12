@@ -175,8 +175,8 @@ class Decoder(dict):
         return super().__getitem__(nkey)
 
     @classmethod
-    def with_normalized_mappings(cls, mappings):
-        return cls((normalize_key(k), v) for k,v in mappings)
+    def from_valued_numbers(cls, valued_numbers):
+        return cls((normalize_key(n.code), n.value) for n in valued_numbers)
 
 class Entry:
 
@@ -189,12 +189,28 @@ class Entry:
         all_patterns, all_outputs = spec.split('|')
         patterns = all_patterns.split()
         outputs = all_outputs.split()
-        out_mappings = [(out, len(out)) for out in outputs if len(out) in EASY_ONES]
-        pat_mappings = [(pat, len(pat)) for pat in patterns if len(pat) in EASY_ONES]
-        decoder = Decoder.with_normalized_mappings(out_mappings + pat_mappings)
+        numbers = [Number.from_str(s) for s in patterns]
+        log.debug(f'{numbers=}')
+        assert len(numbers) == 10, f"Expected 10 numbers, got {len(numbers)}"
+        blank = Number.from_str("")
+        i = one(numbers)
+        iv = four(numbers)
+        vii = seven(numbers)
+        viii = eight(numbers)
+        vi = six(numbers, vii=vii, viii=viii, blank=blank)
+        v = five(numbers)
+        ii = two(numbers, v=v, viii=viii)
+        iii = three(numbers, ii=ii, v=v)
+        z = zero(numbers, ii=ii, iii=iii, vi=vi)
+        ix = nine(numbers, ii=ii, iii=iii, vi=vi)
+        decoder = Decoder.from_valued_numbers([z, i, ii, iii, iv, v, vi, vii, viii, ix])
         translated_outputs = [decoder[out] for out in outputs]
         translated_patterns = [decoder[pat] for pat in patterns]
         return cls(translated_patterns, translated_outputs)
+
+    @property
+    def output(self):
+        return int(''.join(map(str, self.outputs)))
 
     def __repr__(self):
         return f'Entry(patterns="{self.patterns}", outputs={self.outputs})'
@@ -209,6 +225,13 @@ class Entries:
 
     def __len__(self):
         return len(self.entries)
+
+    def __iter__(self):
+        self.__entries_iter = iter(self.entries)
+        return self
+
+    def __next__(self):
+        return next(self.__entries_iter)
 
     @property
     def outputs(self):

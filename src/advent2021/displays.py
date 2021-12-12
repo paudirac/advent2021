@@ -161,6 +161,10 @@ class ValuedNumber(Number):
     def from_unvalued(cls, number, value):
         return cls(number.code, value)
 
+    def __repr__(self):
+        normalized = ''.join(sorted(c for c in self.code))
+        return f"""ValuedNumber(code="{normalized}, value={self.value}")"""
+
 
 class Decoder(dict):
 
@@ -190,7 +194,6 @@ class Entry:
         patterns = all_patterns.split()
         outputs = all_outputs.split()
         numbers = [Number.from_str(s) for s in patterns]
-        log.debug(f'{numbers=}')
         assert len(numbers) == 10, f"Expected 10 numbers, got {len(numbers)}"
         blank = Number.from_str("")
         i = one(numbers)

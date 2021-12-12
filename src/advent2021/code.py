@@ -161,6 +161,7 @@ def day_8_1(lns):
     return len(easy_ones)
 
 def day_8_2(lns):
+    logging.basicConfig(level=logging.DEBUG)
     entries = parse_entries(lns)
     outputs = [entry.output for entry in entries]
     return sum(outputs)

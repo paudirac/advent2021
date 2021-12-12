@@ -35,7 +35,6 @@ def test_parse_enty():
     assert entry.patterns == [8, 5, 2, 3, 7, 9, 6, 4, 0, 1]
     assert entry.outputs == [5, 3, 5, 3]
     assert entry.output == 5353
-    log.debug(f'{entry=}')
 
 def test_notes():
     lns = mk_lines(sample_data)
@@ -74,7 +73,6 @@ def test_easy_digits():
     all_outputs = entries.all_outputs
     assert len(all_outputs) == 40
     easy_ones = [out for out in all_outputs if out in [1, 4, 7, 8]]
-    log.debug(f'{easy_ones=}')
     assert len(easy_ones) == 26
 
 Z     = Number.from_str("abcefg")

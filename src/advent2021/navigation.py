@@ -52,11 +52,9 @@ class Stack:
         self.imp = deque()
 
     def push(self, item):
-        log.debug(f'push: {item}')
         self.imp.append(item)
 
     def pop(self):
-        log.debug('pop')
         return self.imp.pop()
 
     @property
@@ -66,21 +64,42 @@ class Stack:
     def __len__(self):
         return len(self.imp)
 
+    def __str__(self):
+        return ''.join(list(reversed(self.imp)))
+
     def __repr__(self):
         return f'Stack({list(reversed(self.imp))})'
+
+class Completion:
+
+    def __init__(self, completion):
+        self.completion = completion
+
+    def __repr__(self):
+        return self.completion
+
+    def __eq__(self, other):
+        if isinstance(other, Completion):
+            return self.completion == other.completion
+        elif isinstance(other, str):
+            return self.completion == other
+        else:
+            return False
 
 def parse_line(ln):
     s = Stack()
     for c in ln:
-        log.debug(f'processing {c} {s}')
         if c in OPENINGS:
             s.push(c)
         elif c in CLOSINGS:
             if LEFT_PAIR[c] == s.top:
                 _ = s.pop()
             else:
-                return (ln, ParseError(expected=RIGHT_PAIR[s.top], found=c))
-    return (ln, None)
+                return ((ln, None), ParseError(expected=RIGHT_PAIR[s.top], found=c))
+    if len(s) > 0:
+        t = str.maketrans(OPENINGS, CLOSINGS)
+        return ((ln, str(s).translate(t)), None)
+    return ((ln, None), None)
 
 class Subsystem:
 
@@ -94,6 +113,10 @@ class Subsystem:
     def corrupted(self):
         return [(ln, e) for ln, e in self.lines if e is not None]
 
+    @property
+    def incomplete(self):
+        return [(ln, c) for (ln, c), e in self.lines if e is None and c is not None]
+
 def syntax_error_score(corrupted):
     score = {
         ')': 3,
@@ -102,6 +125,20 @@ def syntax_error_score(corrupted):
         '>': 25137,
     }
     return sum(score[e.found] for _,e in corrupted)
+
+def completion_score(completion):
+    score = {
+        ')': 1,
+        ']': 2,
+        '}': 3,
+        '>': 4,
+    }
+    total_score = 0
+    for c in completion:
+        total_score *= 5
+        total_score += score[c]
+    return total_score
+
 
 def parse_subsystem(lns):
     return Subsystem(parse_line(ln) for ln in lns if len(ln))

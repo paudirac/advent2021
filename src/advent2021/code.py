@@ -195,12 +195,19 @@ def day_9_2(lns):
 from advent2021.navigation import (
     parse_subsystem,
     syntax_error_score,
+    completion_score,
 )
 
 def day_10_1(lns):
     subsystem = parse_subsystem(lns)
     assert len(subsystem) == 94
     return syntax_error_score(subsystem.corrupted)
+
+def day_10_2(lns):
+    subsystem = parse_subsystem(lns)
+    scores = list(sorted([completion_score(c) for _,c in subsystem.incomplete]))
+    middle_score = scores[int(len(scores)/2)]
+    return middle_score
 
 
 DAYS = {
@@ -223,6 +230,7 @@ DAYS = {
     '9.1': day_9_1,
     '9.2': day_9_2,
     '10.1': day_10_1,
+    '10.2': day_10_2,
 }
 
 PARSER = {
@@ -245,5 +253,6 @@ PARSER = {
     '9.1': lambda f: lines(f),
     '9.2': lambda f: lines(f),
     '10.1': lambda f: lines(f),
+    '10.2': lambda f: lines(f),
 }
 

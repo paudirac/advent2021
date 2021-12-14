@@ -1,22 +1,19 @@
 import logging
 log = logging.getLogger(__name__)
 
-class Subsystem:
-
-    def __init__(self, lines):
-        self.lines = list(lines)
-
-    def __len__(self):
-        return len(self.lines)
-
-def parse_subsystem(lns):
-    return Subsystem(ln for ln in lns if len(ln))
-
 
 class ParseError:
 
-    def __init__(self, msg):
-        self.msg = msg
+    def __init__(self, expected, found):
+        self.expected = expected
+        self.found = found
+
+    @property
+    def msg(self):
+        return f'Expected {self.expected}, but found {self.found} instead.'
+
+    def __repr__(self):
+        return self.msg
 
     def __eq__(self, other):
         if isinstance(other, ParseError):
@@ -82,5 +79,29 @@ def parse_line(ln):
             if LEFT_PAIR[c] == s.top:
                 _ = s.pop()
             else:
-                return (None, ParseError(f'Expected {RIGHT_PAIR[s.top]}, but found {c} instead.'))
+                return (ln, ParseError(expected=RIGHT_PAIR[s.top], found=c))
     return (ln, None)
+
+class Subsystem:
+
+    def __init__(self, lines):
+        self.lines = list(lines)
+
+    def __len__(self):
+        return len(self.lines)
+
+    @property
+    def corrupted(self):
+        return [(ln, e) for ln, e in self.lines if e is not None]
+
+def syntax_error_score(corrupted):
+    score = {
+        ')': 3,
+        ']': 57,
+        '}': 1197,
+        '>': 25137,
+    }
+    return sum(score[e.found] for _,e in corrupted)
+
+def parse_subsystem(lns):
+    return Subsystem(parse_line(ln) for ln in lns if len(ln))

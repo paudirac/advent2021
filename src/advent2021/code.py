@@ -192,6 +192,16 @@ def day_9_2(lns):
     from functools import reduce
     return reduce(lambda x,y: x * y, basins_lengths[:3])
 
+from advent2021.navigation import (
+    parse_subsystem,
+    syntax_error_score,
+)
+
+def day_10_1(lns):
+    subsystem = parse_subsystem(lns)
+    assert len(subsystem) == 94
+    return syntax_error_score(subsystem.corrupted)
+
 
 DAYS = {
     '1.1': count_larger,
@@ -212,6 +222,7 @@ DAYS = {
     '8.2': day_8_2,
     '9.1': day_9_1,
     '9.2': day_9_2,
+    '10.1': day_10_1,
 }
 
 PARSER = {
@@ -233,5 +244,6 @@ PARSER = {
     '8.2': lambda f: lines(f),
     '9.1': lambda f: lines(f),
     '9.2': lambda f: lines(f),
+    '10.1': lambda f: lines(f),
 }
 

@@ -23,6 +23,7 @@ from advent2021.navigation import (
     parse_subsystem,
     parse_line,
     Stack,
+    syntax_error_score,
 )
 
 
@@ -58,3 +59,10 @@ def test_stack():
     assert len(s) == 0
     with pytest.raises(IndexError):
         s.pop()
+
+def test_syntax_error_score():
+    lns = mk_lines(sample_data)
+    subsystem = parse_subsystem(lns)
+    assert len(subsystem) == 10
+    assert len(subsystem.corrupted) == 5
+    assert syntax_error_score(subsystem.corrupted) == 26397

@@ -133,6 +133,7 @@ class Grid(FlashCounter):
         return cls(octos={Octopus(energy, pos): pos for item in config for pos, energy in item})
 
 def parse_grid_config(lns):
+    lns = list(ln.strip() for ln in lns if len(ln) > 0)
     lns = list(ln for ln in lns if len(ln))
     return [
         [(Position(i, j), int(energy)) for i, energy in enumerate(ln)]

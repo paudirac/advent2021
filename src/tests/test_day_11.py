@@ -12,6 +12,7 @@ def mk_lines(s):
 
 from advent2021.octopus import (
     Octopus,
+    FlashCounter,
 )
 
 def test_each_octopus_has_an_energy_level():
@@ -41,8 +42,20 @@ def test_octopus_increases_energy_level_by_1_on_any_step():
         octopus.step_ends()
 
 def test_octopus_flashes_beyond_9():
+    flash_counter = FlashCounter(flash_count=0)
+    assert flash_counter.flash_count == 0
     octopus = Octopus(9)
+    octopus.accept_flash_receiver(flash_counter)
     octopus.step_begins()
-    assert octopus.flashing
     octopus.step_ends()
     assert octopus.energy_level == 0
+    assert flash_counter.flash_count == 1
+    energy_steps = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)]
+    for _, energy in energy_steps:
+        octopus.step_begins()
+        octopus.step_ends()
+        assert octopus.energy_level == energy
+    octopus.step_begins()
+    octopus.step_ends()
+    assert octopus.energy_level == 0
+    assert flash_counter.flash_count == 2

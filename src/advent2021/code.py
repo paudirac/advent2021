@@ -212,6 +212,7 @@ def day_10_2(lns):
 from advent2021.octopus import (
     parse_grid_config,
     Grid,
+    ResetGrid,
 )
 
 def day_11_1(lns):
@@ -220,6 +221,13 @@ def day_11_1(lns):
     assert grid.flash_count == 0
     grid.steps(100)
     return grid.flash_count
+
+def day_11_2(lns):
+    grid_config = parse_grid_config(lns)
+    grid = ResetGrid.from_config(grid_config)
+    assert grid.flash_count == 0
+    grid.stop_when_all_flash()
+    return grid.step_number
 
 
 DAYS = {
@@ -244,6 +252,7 @@ DAYS = {
     '10.1': day_10_1,
     '10.2': day_10_2,
     '11.1': day_11_1,
+    '11.2': day_11_2,
 }
 
 PARSER = {
@@ -268,5 +277,6 @@ PARSER = {
     '10.1': lambda f: lines(f),
     '10.2': lambda f: lines(f),
     '11.1': lambda f: lines(f),
+    '11.2': lambda f: lines(f),
 }
 

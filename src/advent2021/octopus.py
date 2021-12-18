@@ -132,6 +132,17 @@ class Grid(FlashCounter):
     def from_config(cls, config):
         return cls(octos={Octopus(energy, pos): pos for item in config for pos, energy in item})
 
+class ResetGrid(Grid):
+
+    def step(self):
+        self.flash_count = 0
+        super().step()
+
+    def stop_when_all_flash(self):
+        while not self.flash_count == len(self.octos):
+            self.step()
+        log.debug(f'all flashing at step: {self.step_number}')
+
 def parse_grid_config(lns):
     lns = list(ln.strip() for ln in lns if len(ln) > 0)
     lns = list(ln for ln in lns if len(ln))

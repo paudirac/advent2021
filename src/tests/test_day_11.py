@@ -13,6 +13,7 @@ from advent2021.octopus import (
     Position,
     parse_grid_config,
     Grid,
+    ResetGrid,
 )
 
 def test_each_octopus_has_an_energy_level():
@@ -110,3 +111,11 @@ def test_grid_evolution():
     assert grid.flash_count == 0
     grid.steps(100)
     assert grid.flash_count == 1656
+
+def test_grid_evolve_till_all_flash():
+    lns = mk_lines(sample_data)
+    grid_config = parse_grid_config(lns)
+    grid = ResetGrid.from_config(grid_config)
+    assert grid.flash_count == 0
+    grid.stop_when_all_flash()
+    assert grid.step_number == 195

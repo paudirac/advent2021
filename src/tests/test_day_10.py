@@ -85,8 +85,6 @@ def test_stack_remaining_join():
     ]
 )
 def test_parse_incomplete_line(ln, remaining, score):
-    log.debug(f'{ln=}')
-    log.debug(f'{remaining=}')
     (ln, completion), e = parse_line(ln)
     assert e is None
     assert completion is not None

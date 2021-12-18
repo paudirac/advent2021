@@ -71,8 +71,6 @@ litte_sample_data = """11111
 def test_little_grid():
     lns = mk_lines(litte_sample_data)
     grid_config = parse_grid_config(lns)
-    log.debug(f'{grid_config=}')
-    log.debug(f'{grid_config[2]=}')
     assert grid_config[2] == [
         (Position(0, 2), 1),
         (Position(1, 2), 9),

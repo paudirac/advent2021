@@ -1,3 +1,4 @@
+attr==0.3.1
 attrs==21.2.0
 colorama==0.4.4
 docopt==0.6.2

@@ -230,6 +230,15 @@ def day_11_2(lns):
     return grid.step_number
 
 
+from advent2021 import caves
+
+def day_12_1(lns):
+    thecaves = caves.parse_rough_map(lns)
+    graph = thecaves.graph
+    paths = caves.build_paths(graph, caves.Start('start'))
+    return len(paths)
+
+
 DAYS = {
     '1.1': count_larger,
     '1.2': lambda l: count_larger(sliding_sum(l, window=3)),
@@ -253,6 +262,7 @@ DAYS = {
     '10.2': day_10_2,
     '11.1': day_11_1,
     '11.2': day_11_2,
+    '12.1': day_12_1,
 }
 
 PARSER = {
@@ -278,5 +288,6 @@ PARSER = {
     '10.2': lambda f: lines(f),
     '11.1': lambda f: lines(f),
     '11.2': lambda f: lines(f),
+    '12.1': lambda f: lines(f),
 }
 

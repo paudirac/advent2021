@@ -7,7 +7,7 @@ from advent2021.caves import (
     parse_rough_map,
     Cave,
     Conn,
-    build_tree,
+    build_paths,
     Node,
     Start,
     End,
@@ -51,30 +51,6 @@ def test_connections():
     assert caves.connections(Cave('c')) == { Cave('A') }
     assert caves.connections(Cave('d')) == { Cave('b') }
 
-def xtest_start_end():
-    lns = mk_lines(sample_data)
-    caves = parse_rough_map(lns)
-    assert caves.get('start') == Cave('start')
-    assert caves.get('end') == Cave('end')
-    tree = build_tree(caves, start=Cave('end'))
-    log.debug(f'{tree=}')
-    assert False
-    # build cave tree
-    # discard paths that do not end to the end
-    # create paths
-
-def xtest_conns_dict():
-    lns = mk_lines(sample_data)
-    caves = parse_rough_map(lns)
-    graph = caves.graph
-    import pprint
-    tree = build_tree(graph)
-    import pprint
-    log.debug(f'{tree=}')
-    #log.debug(f'{pprint.pformat(tree)}')
-    assert len(tree) == 2
-    assert False
-
 def test_simple_graph():
     S = Start('start')
     a = Cave('a')
@@ -86,18 +62,14 @@ def test_simple_graph():
         b: [E],
         E: [a, b],
     }
-    tree = build_tree(graph, start=S)
-    log.debug(f'{tree=}')
+    paths = build_paths(graph, start=S)
+    expected_paths = set([
+        'start-a-end',
+        'start-b-end',
+    ])
 
-    root = Node(S, graph, parent=None)
-    node_root_a = Node(a, graph, parent=root)
-    node_root_b = Node(b, graph, parent=root)
-    node_root_a_end = Node(E, graph, parent=node_root_a)
-    node_root_b_end = Node(E, graph, parent=node_root_b)
-    expected = root
-    assert tree == expected
+    assert paths == expected_paths
 
-@pytest.mark.only
 def test_not_so_simple_graph():
     S = Start('start')
     a = Cave('a')
@@ -105,61 +77,126 @@ def test_not_so_simple_graph():
     E = End('end')
     graph = {
         S: [a, b],
-        a: [E,b],
-        b: [E, a],
+        a: [S, E,b],
+        b: [S, E, a],
         E: [a, b],
     }
-    tree = build_tree(graph, start=S)
+    paths = build_paths(graph, start=S)
+    expected_paths = set([
+        'start-a-end',
+        'start-a-b-end',
+        'start-b-end',
+        'start-b-a-end',
+    ])
+    assert paths == expected_paths
 
-    # root = Node(S, graph, parent=None)
-    # root_a = Node(a, graph, parent=root)
-    # root_b = Node(b, graph, parent=root)
-    # root_a_end = Node(E, graph, parent=root_a)
-    # root_b_end = Node(E, graph, parent=root_b)
-    # root_a_b = Node(b, graph, parent=root_a)
-    # root_a_b_end = Node(E, graph, parent=root_a_b)
-    # root_b_a = Node(a, graph, parent=root_b)
-    # root_b_a_end = Node(E, graph, parent=root_b_a)
-    #log.debug(f'expected: {expected}')
-    log.debug(f'{tree=}')
-    #expected = root
-    #assert tree == expected
-    assert False
-
-
-def xtest_not_so_simple_graph():
-    S = Cave('start')
+def test_not_so_simple_graph_with_repetitions():
+    S = Start('start')
     A = Cave('A')
     b = Cave('b')
-    E = Cave('end')
+    E = End('end')
     graph = {
         S: [A, b],
-        A: [E, b],
-        b: [E, A],
+        A: [S, E, b],
+        b: [S, E, A],
         E: [A, b],
     }
-    X = Cave('∅')
-    tree = build_tree(graph, start=S)
-    log.debug(f'{tree=}')
-    expected = [
-        S,
-        [A, [E], [b, [E], [A, [E], [b, X]]]], [b, X]]
-    assert tree == expected
+    paths = build_paths(graph, start=S)
+    log.debug(f'{paths=}')
+    expected_paths = set([
+        'start-A-b-A-end',
+        'start-A-b-end',
+        'start-A-end',
+        'start-b-A-end',
+        'start-b-end',
+    ])
+    log.debug(f'{paths=}')
+    assert paths == expected_paths
 
-def xtest_graph():
-    S = Cave('start')
-    A = Cave('A')
-    b = Cave('b')
-    c = Cave('c')
-    E = Cave('end')
-    graph = {
-        S: [A, b],
-        A: [S, b],
-        b: [A, c],
-        c: [b, E],
-        E: [b, c],
-    }
+def test_paths_on_sample():
+    lns = mk_lines(sample_data)
+    caves = parse_rough_map(lns)
+    graph = caves.graph
+    paths = build_paths(graph, Start('start'))
+    normalized_paths = set([path.replace('-', ',') for path in paths])
+    expected_paths = set([
+        'start,A,b,A,c,A,end',
+        'start,A,b,A,end',
+        'start,A,b,end',
+        'start,A,c,A,b,A,end',
+        'start,A,c,A,b,end',
+        'start,A,c,A,end',
+        'start,A,end',
+        'start,b,A,c,A,end',
+        'start,b,A,end',
+        'start,b,end',
+    ])
+    assert normalized_paths == expected_paths
 
-    root = build_tree(graph, start=S)
-    log.debug(f'{root=}')
-    assert False
+sample_data_2 = """dc-end
+HN-start
+start-kj
+dc-start
+dc-HN
+LN-dc
+HN-end
+kj-sa
+kj-HN
+kj-dc
+"""
+
+def test_paths_on_sample_2():
+    lns = mk_lines(sample_data_2)
+    caves = parse_rough_map(lns)
+    graph = caves.graph
+    paths = build_paths(graph, Start('start'))
+    normalized_paths = set([path.replace('-', ',') for path in paths])
+    expected_paths = set([
+        'start,HN,dc,HN,end',
+        'start,HN,dc,HN,kj,HN,end',
+        'start,HN,dc,end',
+        'start,HN,dc,kj,HN,end',
+        'start,HN,end',
+        'start,HN,kj,HN,dc,HN,end',
+        'start,HN,kj,HN,dc,end',
+        'start,HN,kj,HN,end',
+        'start,HN,kj,dc,HN,end',
+        'start,HN,kj,dc,end',
+        'start,dc,HN,end',
+        'start,dc,HN,kj,HN,end',
+        'start,dc,end',
+        'start,dc,kj,HN,end',
+        'start,kj,HN,dc,HN,end',
+        'start,kj,HN,dc,end',
+        'start,kj,HN,end',
+        'start,kj,dc,HN,end',
+        'start,kj,dc,end',
+    ])
+    assert normalized_paths == expected_paths
+
+sample_data_3 = """fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW
+"""
+
+def test_paths_on_larger_sample():
+    lns = mk_lines(sample_data_3)
+    caves = parse_rough_map(lns)
+    graph = caves.graph
+    paths = build_paths(graph, Start('start'))
+    assert len(paths) == 226

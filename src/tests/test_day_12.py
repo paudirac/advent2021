@@ -8,6 +8,7 @@ from advent2021.caves import (
     Cave,
     Conn,
     build_paths,
+    count_paths,
     Node,
     Start,
     End,
@@ -200,3 +201,5 @@ def test_paths_on_larger_sample():
     graph = caves.graph
     paths = build_paths(graph, Start('start'))
     assert len(paths) == 226
+    assert count_paths(graph, Start('start')) == 226
+    #assert count_paths(graph, Start('start'), allowed_times_max=2) == 3509

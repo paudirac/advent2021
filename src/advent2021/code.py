@@ -238,6 +238,11 @@ def day_12_1(lns):
     paths = caves.build_paths(graph, caves.Start('start'))
     return len(paths)
 
+def day_12_2(lns):
+    thecaves = caves.parse_rough_map(lns)
+    graph = thecaves.graph
+    paths = caves.build_paths(graph, caves.Start('start'), allowed_times_max=2)
+    return len(paths)
 
 DAYS = {
     '1.1': count_larger,
@@ -263,6 +268,7 @@ DAYS = {
     '11.1': day_11_1,
     '11.2': day_11_2,
     '12.1': day_12_1,
+    '12.2': day_12_2,
 }
 
 PARSER = {
@@ -289,5 +295,6 @@ PARSER = {
     '11.1': lambda f: lines(f),
     '11.2': lambda f: lines(f),
     '12.1': lambda f: lines(f),
+    '12.2': lambda f: lines(f),
 }
 

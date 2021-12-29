@@ -112,18 +112,24 @@ class Node:
             current = current.parent
         return path + [current.value]
 
-    def walk(self, accumulator):
+    def walk(self, accumulator, allowed_times_max=1):
         for child in self.graph[self.value]:
             assert child != self.value, "Child {child} is self! {self.value}"
             if child.is_end:
                 child_node = Node(child, self.graph, parent=self)
-                accumulator.append(child_node.chain)
+                accumulator.accumulate(child_node.chain)
             else:
-                is_root = child == Cave('start')
-                is_small_and_repeated = child.is_small and child in self.path_to_parent
-                if not child.is_start and not is_small_and_repeated:
-                    child_node = Node(child, self.graph, parent=self)
-                    child_node.walk(accumulator=accumulator)
+                if not child.is_start:
+                    is_not_small = not child.is_small
+                    if is_not_small:
+                        child_node = Node(child, self.graph, parent=self)
+                        child_node.walk(accumulator=accumulator)
+                    else:
+                        is_repeated = child in self.path_to_parent
+                        is_not_repeated = not is_repeated
+                        if is_not_repeated:
+                            child_node = Node(child, self.graph, parent=self)
+                            child_node.walk(accumulator=accumulator)
 
     def _add_child(self, child):
         self.childs.append(child)
@@ -136,12 +142,35 @@ class Node:
         chain = '-'.join([str(step) for step in reversed(self.path_to_parent)])
         return f'Node({self.value}, chain={chain} paths={self.paths}))'
 
+class AccumulatorCounter:
 
-def build_paths(graph, start):
+    def __init__(self):
+        self.count = 0
+
+    def accumulate(self, item):
+        self.count += 1
+
+class PathAccumulator(AccumulatorCounter):
+
+    def __init__(self):
+        super().__init__()
+        self.paths = []
+
+    def accumulate(self, item):
+        super().accumulate(item)
+        self.paths.append(item)
+
+def build_paths(graph, start, allowed_times_max=1):
     root = Node(start, graph, parent=None)
-    accumulator = []
-    root.walk(accumulator=accumulator)
-    return set(accumulator)
+    accumulator = PathAccumulator()
+    root.walk(accumulator=accumulator, allowed_times_max=allowed_times_max)
+    return set(accumulator.paths)
+
+def count_paths(graph, start, allowed_times_max=1):
+    root = Node(start, graph, parent=None)
+    accumulator = AccumulatorCounter()
+    root.walk(accumulator=accumulator, allowed_times_max=allowed_times_max)
+    return accumulator.count
 
 
 

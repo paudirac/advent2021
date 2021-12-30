@@ -112,24 +112,21 @@ class Node:
             current = current.parent
         return path + [current.value]
 
-    def walk(self, accumulator, allowed_times_max=1):
+    def walk(self, accumulator, continue_walk):
         for child in self.graph[self.value]:
             assert child != self.value, "Child {child} is self! {self.value}"
+
+            if child.is_start:
+                continue # next child
+
             if child.is_end:
                 child_node = Node(child, self.graph, parent=self)
                 accumulator.accumulate(child_node.chain)
-            else:
-                if not child.is_start:
-                    is_not_small = not child.is_small
-                    if is_not_small:
-                        child_node = Node(child, self.graph, parent=self)
-                        child_node.walk(accumulator=accumulator)
-                    else:
-                        is_repeated = child in self.path_to_parent
-                        is_not_repeated = not is_repeated
-                        if is_not_repeated:
-                            child_node = Node(child, self.graph, parent=self)
-                            child_node.walk(accumulator=accumulator)
+                continue # next child
+
+            if continue_walk(child, self):
+                child_node = Node(child, self.graph, parent=self)
+                child_node.walk(accumulator=accumulator, continue_walk=continue_walk)
 
     def _add_child(self, child):
         self.childs.append(child)
@@ -160,16 +157,29 @@ class PathAccumulator(AccumulatorCounter):
         super().accumulate(item)
         self.paths.append(item)
 
-def build_paths(graph, start, allowed_times_max=1):
+from collections import Counter
+
+def continue_walk_strategy_1(node: Cave, path_so_far: Node):
+    if not node.is_small:
+        return True
+
+    counts = Counter(path_so_far.path_to_parent)
+    appearances = counts[node]
+    is_allowed = appearances + 1 <= 1
+
+    return is_allowed
+
+
+def build_paths(graph, start, continue_walk=continue_walk_strategy_1):
     root = Node(start, graph, parent=None)
     accumulator = PathAccumulator()
-    root.walk(accumulator=accumulator, allowed_times_max=allowed_times_max)
+    root.walk(accumulator=accumulator, continue_walk=continue_walk)
     return set(accumulator.paths)
 
-def count_paths(graph, start, allowed_times_max=1):
+def count_paths(graph, start, continue_walk=continue_walk_strategy_1):
     root = Node(start, graph, parent=None)
     accumulator = AccumulatorCounter()
-    root.walk(accumulator=accumulator, allowed_times_max=allowed_times_max)
+    root.walk(accumulator=accumulator, continue_walk=continue_walk)
     return accumulator.count
 
 

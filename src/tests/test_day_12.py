@@ -174,6 +174,7 @@ def test_paths_on_sample_2():
         'start,kj,dc,end',
     ])
     assert normalized_paths == expected_paths
+    #assert count_paths(graph, Start('start'), allowed_times_max=2) == 103
 
 sample_data_3 = """fs-end
 he-DX

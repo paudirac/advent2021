@@ -241,8 +241,7 @@ def day_12_1(lns):
 def day_12_2(lns):
     thecaves = caves.parse_rough_map(lns)
     graph = thecaves.graph
-    paths = caves.build_paths(graph, caves.Start('start'), allowed_times_max=2)
-    return len(paths)
+    return caves.count_paths(graph, caves.Start('start'), continue_walk=caves.continue_walk_strategy_2)
 
 DAYS = {
     '1.1': count_larger,

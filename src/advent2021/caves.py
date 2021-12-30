@@ -7,11 +7,14 @@ log.debug(f'loading {__name__}')
 
 from collections import namedtuple
 
+def is_small(name):
+    return name != 'start' and all(c.islower() for c in name)
+
 class Cave(namedtuple('Cave', 'name')):
 
     @property
     def is_small(self):
-        return self.name != 'start' and all(c.islower() for c in self.name)
+        return is_small(self.name)
 
     def __repr__(self):
         return self.name
@@ -168,6 +171,31 @@ def continue_walk_strategy_1(node: Cave, path_so_far: Node):
     is_allowed = appearances + 1 <= 1
 
     return is_allowed
+
+def continue_walk_strategy_2(node: Cave, path_so_far: Node) -> bool:
+    assert not node.is_start, "Is start!"
+    assert not node.is_end, "Is end!"
+    allowed_values = { 1, 2 }
+    if not node.is_small:
+        return True
+
+    path_so_far_next = [node] + path_so_far.path_to_parent
+    counts = Counter(step for step in path_so_far_next
+                     if step.is_small and
+                     not step.is_start and
+                     not step.is_end)
+
+    more_than_twice = [(cave, visits) for cave,visits in counts.items() if visits > 2]
+    if len(more_than_twice) > 0:
+        return False
+    twice = [(cave, visits) for cave, visits in counts.items() if visits == 2]
+    if len(twice) > 1:
+        return False
+
+    if all(visits == 1 for cave, visits in counts.items() if visits < 2):
+        return True
+
+    raise Exception(f'Not should be here {node} {path_so_far.chain} {counts=}')
 
 
 def build_paths(graph, start, continue_walk=continue_walk_strategy_1):

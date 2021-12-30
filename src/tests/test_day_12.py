@@ -12,6 +12,7 @@ from advent2021.caves import (
     Node,
     Start,
     End,
+    continue_walk_strategy_2,
 )
 
 def mk_lines(s):
@@ -103,7 +104,6 @@ def test_not_so_simple_graph_with_repetitions():
         E: [A, b],
     }
     paths = build_paths(graph, start=S)
-    log.debug(f'{paths=}')
     expected_paths = set([
         'start-A-b-A-end',
         'start-A-b-end',
@@ -111,7 +111,6 @@ def test_not_so_simple_graph_with_repetitions():
         'start-b-A-end',
         'start-b-end',
     ])
-    log.debug(f'{paths=}')
     assert paths == expected_paths
 
 def test_paths_on_sample():
@@ -133,6 +132,10 @@ def test_paths_on_sample():
         'start,b,end',
     ])
     assert normalized_paths == expected_paths
+    paths = build_paths(graph, Start('start'), continue_walk=continue_walk_strategy_2)
+    count = count_paths(graph, Start('start'), continue_walk=continue_walk_strategy_2)
+    assert count == 36
+    assert len(paths) == 36
 
 sample_data_2 = """dc-end
 HN-start
@@ -174,7 +177,7 @@ def test_paths_on_sample_2():
         'start,kj,dc,end',
     ])
     assert normalized_paths == expected_paths
-    #assert count_paths(graph, Start('start'), allowed_times_max=2) == 103
+    assert count_paths(graph, Start('start'), continue_walk=continue_walk_strategy_2) == 103
 
 sample_data_3 = """fs-end
 he-DX
@@ -203,4 +206,4 @@ def test_paths_on_larger_sample():
     paths = build_paths(graph, Start('start'))
     assert len(paths) == 226
     assert count_paths(graph, Start('start')) == 226
-    #assert count_paths(graph, Start('start'), allowed_times_max=2) == 3509
+    assert count_paths(graph, Start('start'), continue_walk=continue_walk_strategy_2) == 3509

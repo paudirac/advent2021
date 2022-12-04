@@ -13,3 +13,5 @@ To run the tests
 ``` sh
 (venv) $ pytest
 ```
+
+Publishing this now that it has no spoilers
